@@ -188,6 +188,11 @@ O dashboard é servido automaticamente pelo Docker na porta **8080**.
 Acesse no seu navegador:
 👉 **http://localhost:8080**
 
+> **Dica:** Se a porta 8080 estiver ocupada, você pode alterá-la facilmente:
+> ```bash
+> DASHBOARD_PORT=9090 docker compose up --build -d
+> ```
+
 ![Dashboard Preview](web/dashboard.png)
 
 #### 📊 O Que Você Vê
