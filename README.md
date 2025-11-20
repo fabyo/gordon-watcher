@@ -544,11 +544,7 @@ make clean          # Limpa binários
 ## 📚 Documentação Adicional
 
 - 📖 [API Documentation (GoDoc)](https://pkg.go.dev/github.com/fabyo/gordon-watcher)
-- 📖 [Arquitetura Detalhada](docs/architecture.md)
-- 🔧 [Guia de Configuração](docs/configuration.md)
-- 🚀 [Guia de Deploy](docs/deployment.md)
-- 🐛 [Troubleshooting](docs/troubleshooting.md)
-- 📚 [GoDoc - Visualizando Documentação](docs/GODOC.md)
+-  [GoDoc - Visualizando Documentação](docs/GODOC.md)
 
 ### 📖 API Documentation (GoDoc)
 
