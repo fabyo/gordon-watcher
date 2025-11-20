@@ -31,14 +31,14 @@ COLOR_YELLOW := \033[33m
 COLOR_BLUE := \033[34m
 
 .PHONY: help
-help: ## Show this help message
-	@echo 'Usage: make [target]'
+help: ## Mostra esta mensagem de ajuda
+	@echo 'Uso: make [comando]'
 	@echo ''
-	@echo 'Available targets:'
+	@echo 'Comandos disponíveis:'
 	@awk 'BEGIN {FS = ":.*?## "} /^[a-zA-Z_-]+:.*?## / {printf "  \033[36m%-20s\033[0m %s\n", $$1, $$2}' $(MAKEFILE_LIST)
 
 .PHONY: discover-ip
-discover-ip: ## Discover WSL and Windows IPs for Samba access
+discover-ip: ## Descobre IPs do WSL e Windows para acesso Samba
 	@echo "🔍 Descobrindo IPs..."
 	@echo ""
 	@WSL_IP=$$(ip addr show eth0 2>/dev/null | grep "inet " | awk '{print $$2}' | cut -d/ -f1); \
@@ -59,7 +59,7 @@ discover-ip: ## Discover WSL and Windows IPs for Samba access
 # ─────────────────────────────────────────────────────────
 
 .PHONY: build
-build: clean ## Build the application
+build: clean ## Compila a aplicação
 	@echo "$(COLOR_GREEN)Building $(APP_NAME)...$(COLOR_RESET)"
 	@mkdir -p $(BIN_DIR)
 	CGO_ENABLED=$(CGO_ENABLED) GOOS=$(GOOS) GOARCH=$(GOARCH) go build \
@@ -69,7 +69,7 @@ build: clean ## Build the application
 	@echo "$(COLOR_GREEN)✓ Build complete: $(BIN_DIR)/$(APP_NAME)$(COLOR_RESET)"
 
 .PHONY: build-all
-build-all: ## Build for all platforms
+build-all: ## Compila para todas as plataformas
 	@echo "$(COLOR_GREEN)Building for all platforms...$(COLOR_RESET)"
 	@$(MAKE) build GOOS=linux GOARCH=amd64
 	@mv $(BIN_DIR)/$(APP_NAME) $(BIN_DIR)/$(APP_NAME)-linux-amd64
@@ -84,7 +84,7 @@ build-all: ## Build for all platforms
 	@echo "$(COLOR_GREEN)✓ All builds complete$(COLOR_RESET)"
 
 .PHONY: install
-install: build ## Install the binary to $GOPATH/bin
+install: build ## Instala o binário em $GOPATH/bin
 	@echo "$(COLOR_GREEN)Installing $(APP_NAME)...$(COLOR_RESET)"
 	@cp $(BIN_DIR)/$(APP_NAME) $(GOPATH)/bin/$(APP_NAME)
 	@echo "$(COLOR_GREEN)✓ Installed to $(GOPATH)/bin/$(APP_NAME)$(COLOR_RESET)"
@@ -94,21 +94,21 @@ install: build ## Install the binary to $GOPATH/bin
 # ─────────────────────────────────────────────────────────
 
 .PHONY: deps
-deps: ## Download dependencies
+deps: ## Baixa as dependências
 	@echo "$(COLOR_GREEN)Downloading dependencies...$(COLOR_RESET)"
 	@go mod download
 	@go mod verify
 	@echo "$(COLOR_GREEN)✓ Dependencies downloaded$(COLOR_RESET)"
 
 .PHONY: deps-update
-deps-update: ## Update dependencies
+deps-update: ## Atualiza as dependências
 	@echo "$(COLOR_GREEN)Updating dependencies...$(COLOR_RESET)"
 	@go get -u ./...
 	@go mod tidy
 	@echo "$(COLOR_GREEN)✓ Dependencies updated$(COLOR_RESET)"
 
 .PHONY: deps-clean
-deps-clean: ## Clean up dependencies
+deps-clean: ## Limpa as dependências
 	@echo "$(COLOR_GREEN)Cleaning dependencies...$(COLOR_RESET)"
 	@go mod tidy
 	@echo "$(COLOR_GREEN)✓ Dependencies cleaned$(COLOR_RESET)"
@@ -118,12 +118,12 @@ deps-clean: ## Clean up dependencies
 # ─────────────────────────────────────────────────────────
 
 .PHONY: test
-test: ## Run unit tests
+test: ## Executa testes unitários
 	@echo "$(COLOR_GREEN)Running tests...$(COLOR_RESET)"
 	@go test -v -race -timeout 30s ./...
 
 .PHONY: test-coverage
-test-coverage: ## Run tests with coverage
+test-coverage: ## Executa testes com cobertura
 	@echo "$(COLOR_GREEN)Running tests with coverage...$(COLOR_RESET)"
 	@mkdir -p $(COVERAGE_DIR)
 	@go test -v -race -coverprofile=$(COVERAGE_DIR)/coverage.out -covermode=atomic ./...
@@ -131,17 +131,17 @@ test-coverage: ## Run tests with coverage
 	@echo "$(COLOR_GREEN)✓ Coverage report: $(COVERAGE_DIR)/coverage.html$(COLOR_RESET)"
 
 .PHONY: test-integration
-test-integration: ## Run integration tests
+test-integration: ## Executa testes de integração
 	@echo "$(COLOR_GREEN)Running integration tests...$(COLOR_RESET)"
 	@go test -v -race -tags=integration ./tests/integration/...
 
 .PHONY: test-bench
-test-bench: ## Run benchmarks
+test-bench: ## Executa benchmarks
 	@echo "$(COLOR_GREEN)Running benchmarks...$(COLOR_RESET)"
 	@go test -bench=. -benchmem -run=^$$ ./...
 
 .PHONY: test-stress
-test-stress: ## Run stress tests (file flood simulation)
+test-stress: ## Executa testes de estresse (simulação de flood)
 	@echo "$(COLOR_GREEN)Running stress tests...$(COLOR_RESET)"
 	@./scripts/stress-test.sh
 
@@ -150,7 +150,7 @@ test-stress: ## Run stress tests (file flood simulation)
 # ─────────────────────────────────────────────────────────
 
 .PHONY: lint
-lint: ## Run linter
+lint: ## Executa o linter
 	@echo "$(COLOR_GREEN)Running linter...$(COLOR_RESET)"
 	@if command -v golangci-lint >/dev/null 2>&1; then \
 		golangci-lint run --timeout 5m; \
@@ -160,18 +160,18 @@ lint: ## Run linter
 	fi
 
 .PHONY: fmt
-fmt: ## Format code
+fmt: ## Formata o código
 	@echo "$(COLOR_GREEN)Formatting code...$(COLOR_RESET)"
 	@go fmt ./...
 	@gofmt -s -w .
 
 .PHONY: vet
-vet: ## Run go vet
+vet: ## Executa go vet
 	@echo "$(COLOR_GREEN)Running go vet...$(COLOR_RESET)"
 	@go vet ./...
 
 .PHONY: check
-check: fmt vet lint test ## Run all checks (fmt, vet, lint, test)
+check: fmt vet lint test ## Executa todas as verificações (fmt, vet, lint, test)
 	@echo "$(COLOR_GREEN)✓ All checks passed$(COLOR_RESET)"
 
 # ─────────────────────────────────────────────────────────
@@ -179,12 +179,12 @@ check: fmt vet lint test ## Run all checks (fmt, vet, lint, test)
 # ─────────────────────────────────────────────────────────
 
 .PHONY: run
-run: build ## Build and run the application
+run: build ## Compila e executa a aplicação
 	@echo "$(COLOR_GREEN)Running $(APP_NAME)...$(COLOR_RESET)"
 	@$(BIN_DIR)/$(APP_NAME)
 
 .PHONY: dev
-dev: ## Run with hot reload (requires air)
+dev: ## Executa com hot reload (requer air)
 	@echo "$(COLOR_GREEN)Starting development server with hot reload...$(COLOR_RESET)"
 	@if command -v air >/dev/null 2>&1; then \
 		air; \
@@ -195,12 +195,12 @@ dev: ## Run with hot reload (requires air)
 	fi
 
 .PHONY: dev-docker
-dev-docker: ## Run development environment with Docker Compose
+dev-docker: ## Inicia ambiente de desenvolvimento com Docker Compose
 	@echo "$(COLOR_GREEN)Starting development environment...$(COLOR_RESET)"
 	@docker compose up --build
 
 .PHONY: reset-metrics
-reset-metrics: ## Reset Prometheus metrics manually
+reset-metrics: ## Reseta as métricas do Prometheus manualmente
 	@echo "$(COLOR_YELLOW)Resetting metrics...$(COLOR_RESET)"
 	@curl -X POST http://localhost:9100/reset 2>/dev/null && \
 		echo "$(COLOR_GREEN)✓ Metrics reset successfully$(COLOR_RESET)" || \
@@ -208,7 +208,7 @@ reset-metrics: ## Reset Prometheus metrics manually
 
 
 .PHONY: dev-down
-dev-down: ## Stop development environment
+dev-down: ## Para o ambiente de desenvolvimento
 	@docker compose down
 
 # ─────────────────────────────────────────────────────────
@@ -216,7 +216,7 @@ dev-down: ## Stop development environment
 # ─────────────────────────────────────────────────────────
 
 .PHONY: docker-build
-docker-build: ## Build Docker image
+docker-build: ## Cria a imagem Docker
 	@echo "$(COLOR_GREEN)Building Docker image...$(COLOR_RESET)"
 	@docker build \
 		--build-arg VERSION=$(VERSION) \
@@ -228,14 +228,14 @@ docker-build: ## Build Docker image
 	@echo "$(COLOR_GREEN)✓ Docker image built: $(DOCKER_IMAGE):$(VERSION)$(COLOR_RESET)"
 
 .PHONY: docker-push
-docker-push: ## Push Docker image to registry
+docker-push: ## Envia a imagem Docker para o registry
 	@echo "$(COLOR_GREEN)Pushing Docker image...$(COLOR_RESET)"
 	@docker push $(DOCKER_IMAGE):$(VERSION)
 	@docker push $(DOCKER_IMAGE):latest
 	@echo "$(COLOR_GREEN)✓ Docker image pushed$(COLOR_RESET)"
 
 .PHONY: docker-run
-docker-run: ## Run Docker container
+docker-run: ## Executa o container Docker
 	@docker run --rm -it \
 		-v $(PWD)/data:/opt/gordon/data \
 		-p 8081:8081 \
@@ -247,17 +247,17 @@ docker-run: ## Run Docker container
 # ─────────────────────────────────────────────────────────
 
 .PHONY: deploy-dev
-deploy-dev: ## Deploy to development environment
+deploy-dev: ## Faz deploy no ambiente de desenvolvimento
 	@echo "$(COLOR_GREEN)Deploying to development...$(COLOR_RESET)"
 	@cd ansible && ./scripts/deploy.sh development
 
 .PHONY: deploy-staging
-deploy-staging: ## Deploy to staging environment
+deploy-staging: ## Faz deploy no ambiente de staging
 	@echo "$(COLOR_GREEN)Deploying to staging...$(COLOR_RESET)"
 	@cd ansible && ./scripts/deploy.sh staging
 
 .PHONY: deploy-prod
-deploy-prod: ## Deploy to production environment
+deploy-prod: ## Faz deploy no ambiente de produção
 	@echo "$(COLOR_YELLOW)⚠ Deploying to PRODUCTION$(COLOR_RESET)"
 	@read -p "Are you sure? [y/N] " -n 1 -r; \
 	echo; \
@@ -272,7 +272,7 @@ deploy-prod: ## Deploy to production environment
 # ─────────────────────────────────────────────────────────
 
 .PHONY: clean
-clean: ## Clean build artifacts
+clean: ## Limpa os artefatos de build
 	@echo "$(COLOR_GREEN)Cleaning...$(COLOR_RESET)"
 	@rm -rf $(BIN_DIR)
 	@rm -rf $(BUILD_DIR)
@@ -283,14 +283,14 @@ clean: ## Clean build artifacts
 	@echo "$(COLOR_GREEN)✓ Cleaned$(COLOR_RESET)"
 
 .PHONY: version
-version: ## Show version information
+version: ## Mostra informações de versão
 	@echo "Version:    $(VERSION)"
 	@echo "Commit:     $(COMMIT)"
 	@echo "Build Date: $(BUILD_DATE)"
 	@echo "Go Version: $(shell go version)"
 
 .PHONY: setup
-setup: ## Setup development environment
+setup: ## Configura o ambiente de desenvolvimento
 	@echo "$(COLOR_GREEN)Setting up development environment...$(COLOR_RESET)"
 	@$(MAKE) deps
 	@go install github.com/cosmtrek/air@latest
@@ -298,16 +298,16 @@ setup: ## Setup development environment
 	@echo "$(COLOR_GREEN)✓ Development environment ready$(COLOR_RESET)"
 
 .PHONY: generate-data
-generate-data: ## Generate test data files
+generate-data: ## Gera arquivos de teste
 	@echo "$(COLOR_GREEN)Generating test data...$(COLOR_RESET)"
 	@./scripts/generate-test-files.sh
 
 .PHONY: logs
-logs: ## Show logs (if running with systemd)
+logs: ## Mostra os logs (se rodando com systemd)
 	@sudo journalctl -u gordon-watcher -f
 
 .PHONY: status
-status: ## Show service status
+status: ## Mostra o status do serviço
 	@sudo systemctl status gordon-watcher
 
 
