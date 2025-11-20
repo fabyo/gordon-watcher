@@ -116,9 +116,20 @@ func New(cfg Config) (*Watcher, error) {
 	}
 
 	// Initialize components
+	// Define protected directories (should not be removed even if empty)
+	protectedDirs := make([]string, 0, len(cfg.Paths)+5)
+	protectedDirs = append(protectedDirs, cfg.Paths...)
+	protectedDirs = append(protectedDirs,
+		filepath.Join(cfg.WorkingDir, cfg.SubDirs.Processing),
+		filepath.Join(cfg.WorkingDir, cfg.SubDirs.Processed),
+		filepath.Join(cfg.WorkingDir, cfg.SubDirs.Failed),
+		filepath.Join(cfg.WorkingDir, cfg.SubDirs.Ignored),
+		filepath.Join(cfg.WorkingDir, cfg.SubDirs.Tmp),
+	)
+
 	w.pool = NewWorkerPool(cfg.MaxWorkers, cfg.WorkerQueueSize, w.processFile)
 	w.rateLimit = NewRateLimiter(cfg.MaxFilesPerSecond)
-	w.cleaner = NewCleaner(cfg.WorkingDir, cfg.CleanupInterval, cfg.Logger)
+	w.cleaner = NewCleaner(cfg.WorkingDir, protectedDirs, cfg.CleanupInterval, cfg.Logger)
 	w.stability = NewStabilityChecker(cfg.StableAttempts, cfg.StableDelay)
 	w.cb = NewCircuitBreaker(5, 30*time.Second) // 5 failures, 30s reset timeout
 
