@@ -575,7 +575,6 @@ godoc -http=:6060
 # Ou via terminal
 go doc github.com/fabyo/gordon-watcher/internal/watcher
 ```
-**https://pkg.go.dev/github.com/fabyo/gordon-watcher**
 
 ---
 
