@@ -54,8 +54,7 @@ gordon-watcher/
 │   └── stress-test.sh
 ├── web/                               # Dashboard
 │   ├── index.html
-│   ├── dashboard.png
-│   └── dashboard-wsl.html
+│   └── dashboard.png
 ├── docs/                              # Documentação
 │   ├── ARCHITECTURE.md
 │   ├── CONFIGURATION.md
