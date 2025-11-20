@@ -555,8 +555,9 @@ Isso vai encerrar qualquer processo que tenha "gordon-watcher" no nome.
 
 ## 📚 Documentação Adicional
 
-- 📖 [API Documentation (GoDoc)](https://pkg.go.dev/github.com/fabyo/gordon-watcher)
--  [GoDoc - Visualizando Documentação](docs/GODOC.md)
+- 📖 [Deployment Guide](docs/DEPLOYMENT.md) - Deploy com Docker Compose e Ansible
+- 👨‍💻 [Development Guide](docs/DEVELOPMENT.md) - Guia para contribuidores
+- 🔧 [Troubleshooting](docs/TROUBLESHOOTING.md) - Solução de problemas comunso Documentação](docs/GODOC.md)
 
 ### 📖 API Documentation (GoDoc)
 
