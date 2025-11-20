@@ -5,6 +5,9 @@
 [![Go Version](https://img.shields.io/badge/Go-1.21+-00ADD8?style=flat&logo=go)](https://golang.org/)
 [![License](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
 [![Docker](https://img.shields.io/badge/docker-ready-2496ED?style=flat&logo=docker)](https://www.docker.com/)
+[![RabbitMQ](https://img.shields.io/badge/RabbitMQ-FF6600?style=flat&logo=rabbitmq&logoColor=white)](https://www.rabbitmq.com/)
+[![Prometheus](https://img.shields.io/badge/Prometheus-E6522C?style=flat&logo=prometheus&logoColor=white)](https://prometheus.io/)
+[![Jaeger](https://img.shields.io/badge/Jaeger-60D0E4?style=flat&logo=jaeger&logoColor=white)](https://www.jaegertracing.io/)
 
 <img src="gordon-watcher.png" alt="Gordon Watcher Logo" width="200"/>
 
