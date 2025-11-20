@@ -6,9 +6,7 @@
 [![License](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
 [![Docker](https://img.shields.io/badge/docker-ready-2496ED?style=flat&logo=docker)](https://www.docker.com/)
 
-<p align="center">
-  <img src="gordon-watcher.png" alt="Gordon Watcher Logo" width="200"/>
-</p>
+<img src="gordon-watcher.png" alt="Gordon Watcher Logo" width="200"/>
 
 ## 📖 Overview
 
