@@ -1,4 +1,4 @@
-# 👨‍💻 Development Guide
+# 👨‍💻 Guia de Desenvolvimento
 
 Guia para desenvolvedores que querem contribuir com o Gordon Watcher.
 

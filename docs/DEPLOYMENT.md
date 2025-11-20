@@ -1,4 +1,4 @@
-# 🚀 Deployment Guide
+# 🚀 Guia de Deploy 
 
 Guia completo de deploy do Gordon Watcher em diferentes ambientes.
 
