@@ -86,6 +86,9 @@ type Watcher struct {
 	wg     sync.WaitGroup
 
 	tracer trace.Tracer
+
+	// Track ignored files to deduplicate metric
+	ignoredFiles sync.Map // map[string]time.Time
 }
 
 // New creates a new Watcher instance
@@ -146,6 +149,10 @@ func (w *Watcher) Start(ctx context.Context) error {
 
 	// Start cleaner
 	w.cleaner.Start()
+
+	// Start directory monitor to ensure directories don't disappear
+	w.wg.Add(1)
+	go w.monitorDirectories()
 
 	// Add watch paths
 	for _, path := range w.cfg.Paths {
@@ -254,10 +261,22 @@ func (w *Watcher) handleEvent(event fsnotify.Event) {
 		return
 	}
 
+	// Auto-delete Windows Zone.Identifier files
+	if strings.HasSuffix(event.Name, ":Zone.Identifier") || strings.HasSuffix(event.Name, ".Zone.Identifier") {
+		w.cfg.Logger.Debug("Deleting Zone.Identifier file", "path", event.Name)
+		if err := os.Remove(event.Name); err != nil {
+			w.cfg.Logger.Warn("Failed to delete Zone.Identifier", "path", event.Name, "error", err)
+		}
+		return
+	}
+
 	// Check if file matches patterns
 	if !w.matchesPatterns(event.Name) {
 		w.cfg.Logger.Debug("File does not match patterns", "path", event.Name)
-		metrics.FilesIgnored.Inc()
+		// Deduplicate ignored files metric (only count once per file)
+		if _, exists := w.ignoredFiles.LoadOrStore(event.Name, time.Now()); !exists {
+			metrics.FilesIgnored.Inc()
+		}
 		return
 	}
 
