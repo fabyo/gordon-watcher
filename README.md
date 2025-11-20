@@ -588,7 +588,7 @@ Este projeto está licenciado sob a MIT License - veja o arquivo [LICENSE](LICEN
 ## 👨‍💻 Autor
 
 **Fabyo**  
-📧 fabyo@example.com  
+📧 fabyo.php@gmail.com
 🐙 [GitHub](https://github.com/fabyo)
 
 ---
