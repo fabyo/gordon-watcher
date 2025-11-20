@@ -8,7 +8,7 @@ services:
     restart: unless-stopped
     ports:
       - "8081:8081" # Health check
-      - "9100:9100" # Metrics
+      - "9999:9100" # Metrics (mapped to 9999 to avoid conflicts)
     volumes:
       # Mirror host /opt/gordon-watcher/data to container /opt/gordon-watcher/data
       - /opt/gordon-watcher/data:/opt/gordon-watcher/data

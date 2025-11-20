@@ -202,7 +202,7 @@ dev-docker: ## Inicia ambiente de desenvolvimento com Docker Compose
 .PHONY: reset-metrics
 reset-metrics: ## Reseta as métricas do Prometheus manualmente
 	@echo "$(COLOR_YELLOW)Resetting metrics...$(COLOR_RESET)"
-	@curl -X POST http://localhost:9100/reset 2>/dev/null && \
+	@curl -X POST http://localhost:9999/reset 2>/dev/null && \
 		echo "$(COLOR_GREEN)✓ Metrics reset successfully$(COLOR_RESET)" || \
 		echo "$(COLOR_YELLOW)⚠ Failed to reset metrics. Is the watcher running?$(COLOR_RESET)"
 
