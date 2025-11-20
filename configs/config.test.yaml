@@ -1,0 +1,46 @@
+app:
+  name: gordon-watcher
+  version: dev
+  environment: test
+
+watcher:
+  paths:
+    - /home/fabyo/gordon-test/incoming
+  file_patterns:
+    - "*.xml"
+    - "*.txt"
+  min_file_size: 1
+  max_file_size: 104857600
+  stable_attempts: 2
+  stable_delay: 100000000 # 100ms in nanoseconds
+  cleanup_interval: 300000000000 # 5m in nanoseconds
+  max_workers: 3
+  max_files_per_second: 10
+  worker_queue_size: 5
+  working_dir: /home/fabyo/gordon-test
+  sub_directories:
+    processing: processing
+    processed: processed
+    failed: failed
+    ignored: ignored
+    tmp: tmp
+
+queue:
+  enabled: false
+
+redis:
+  enabled: false
+
+metrics:
+  addr: :9100
+
+health:
+  addr: :8081
+
+telemetry:
+  enabled: false
+
+logger:
+  level: info
+  format: text
+  output: stdout

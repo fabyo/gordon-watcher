@@ -1,5 +1,3 @@
-
-
 services:
   watcher:
     build:
@@ -24,13 +22,28 @@ services:
       - gordon-network
     # Healthcheck is already defined in Dockerfile, but can be overridden here if needed
 
+    # Dashboard (Caddy)
+  dashboard:
+    image: caddy:alpine
+    container_name: gordon-dashboard
+    restart: unless-stopped
+    ports:
+      - "${DASHBOARD_PORT:-8080}:8080"
+    volumes:
+      - ./web:/srv
+      - ./docker/Caddyfile:/etc/caddy/Caddyfile
+    networks:
+      - gordon-network
+    depends_on:
+      - watcher
+
   # RabbitMQ for message queue
   rabbitmq:
     image: rabbitmq:3-management-alpine
     container_name: gordon-rabbitmq
     restart: unless-stopped
     ports:
-      - "5672:5672"   # AMQP
+      - "5672:5672" # AMQP
       - "15672:15672" # Management UI
     environment:
       - RABBITMQ_DEFAULT_USER=gordon
@@ -57,7 +70,7 @@ services:
     networks:
       - gordon-network
     healthcheck:
-      test: ["CMD", "redis-cli", "ping"]
+      test: [ "CMD", "redis-cli", "ping" ]
       interval: 30s
       timeout: 10s
       retries: 3
@@ -83,7 +96,7 @@ services:
     restart: unless-stopped
     ports:
       - "139:139"
-      - "4445:445"  # Porta 4445 no host para evitar conflito com Windows
+      - "4445:445" # Porta 4445 no host para evitar conflito com Windows
     environment:
       - TZ=America/Sao_Paulo
       - USERID=1000
@@ -102,6 +115,7 @@ services:
 volumes:
   rabbitmq-data:
   redis-data:
+
 
 networks:
   gordon-network:

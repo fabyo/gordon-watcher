@@ -285,16 +285,16 @@
         </div>
 
         <div class="links">
-            <a href="http://localhost:9100/metrics" target="_blank" class="link-btn">
+            <a href="http://172.25.144.239:9100/metrics" target="_blank" class="link-btn">
                 📊 Métricas Prometheus
             </a>
-            <a href="http://localhost:8081/health" target="_blank" class="link-btn">
+            <a href="http://172.25.144.239:8081/health" target="_blank" class="link-btn">
                 🏥 Health Check
             </a>
-            <a href="http://localhost:15672" target="_blank" class="link-btn">
+            <a href="http://172.25.144.239:15672" target="_blank" class="link-btn">
                 🐰 RabbitMQ
             </a>
-            <a href="http://localhost:16686" target="_blank" class="link-btn">
+            <a href="http://172.25.144.239:16686" target="_blank" class="link-btn">
                 🔍 Jaeger
             </a>
         </div>
@@ -306,8 +306,8 @@
 
     <script>
         // Auto-detect if running from Windows (accessing WSL)
-        // Try localhost first, if fails, user can manually change
-        const METRICS_URL = 'http://localhost:9100/metrics';
+        // Try 172.25.144.239 first, if fails, user can manually change
+        const METRICS_URL = 'http://172.25.144.239:9100/metrics';
         // Se não funcionar, tente: http://172.25.144.239:9100/metrics
 
         async function fetchMetrics() {

@@ -16,21 +16,7 @@ type Server struct {
 // NewServer creates a new metrics server
 func NewServer(addr string) *Server {
 	mux := http.NewServeMux()
-	// Add CORS middleware
-	handler := http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		w.Header().Set("Access-Control-Allow-Origin", "*")
-		w.Header().Set("Access-Control-Allow-Methods", "GET, OPTIONS")
-		w.Header().Set("Access-Control-Allow-Headers", "Content-Type")
-
-		if r.Method == "OPTIONS" {
-			w.WriteHeader(http.StatusOK)
-			return
-		}
-
-		promhttp.Handler().ServeHTTP(w, r)
-	})
-
-	mux.Handle("/metrics", handler)
+	mux.Handle("/metrics", promhttp.Handler())
 
 	return &Server{
 		server: &http.Server{

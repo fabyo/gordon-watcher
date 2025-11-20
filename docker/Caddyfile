@@ -1,0 +1,18 @@
+:8080 {
+    # Serve static files (Dashboard)
+    root * /srv
+    file_server
+
+    # Proxy metrics requests to the backend
+    handle_path /api/metrics {
+        reverse_proxy watcher:9100 {
+            header_up Host {upstream_hostport}
+            rewrite /metrics
+        }
+    }
+
+    # Health check for Caddy itself
+    handle /health {
+        respond "OK" 200
+    }
+}
