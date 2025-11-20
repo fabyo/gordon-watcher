@@ -51,7 +51,7 @@ discover-ip: ## Discover WSL and Windows IPs for Samba access
 	echo ""; \
 	echo "Credenciais:"; \
 	echo "  Usuário: gordon"; \
-	echo "  Senha: gordon123"
+	echo "  Senha: (verifique .env)"
 	@echo ""
 
 # ─────────────────────────────────────────────────────────

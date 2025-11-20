@@ -117,7 +117,7 @@ Para conectar do Windows ao Samba:
 
 Credenciais:
   Usuário: gordon
-  Senha: gordon123
+  Senha: (definida no .env)
 ```
 
 #### 2. Conectar do Windows
@@ -131,7 +131,7 @@ Credenciais:
    *(Use o IP que apareceu no `make discover-ip`)*
 3. Digite as credenciais:
    - **Usuário**: `gordon`
-   - **Senha**: `gordon123`
+   - **Senha**: (definida no `.env`)
 
 **Opção B: Mapear Unidade de Rede (Recomendado)**
 
@@ -144,13 +144,17 @@ Credenciais:
 7. Marque **"Conectar usando credenciais diferentes"**
 8. Clique em **"Concluir"**
 9. Digite:
-   - **Usuário**: `gordon`
-   - **Senha**: `gordon123`
+   - **Usuário**: `gordon` (ou conforme definido no `.env`)
+   - **Senha**: (definida no `.env`)
 
-**Ou via CMD/PowerShell:**
-```cmd
-net use Z: \\172.24.123.45\incoming /user:gordon gordon123 /persistent:yes
-```
+   **Exemplo de acesso via Windows:**
+   Pressione `Win + R` e digite: `\\172.24.123.45\incoming`
+
+   Ou mapeie via comando:
+   ```cmd
+   net use Z: \\172.24.123.45\incoming /user:gordon * /persistent:yes
+   ```
+   *(O Windows pedirá a senha)*
 
 #### 3. Usar
 
@@ -272,7 +276,7 @@ Visualize o fluxo completo de cada arquivo:
 ### 🐰 RabbitMQ Management
 
 **UI**: `http://localhost:15672`  
-**Credenciais**: `gordon` / `gordon123`
+**Credenciais**: `gordon` / (senha do `.env`)
 
 - Monitore filas e exchanges
 - Visualize mensagens na DLQ

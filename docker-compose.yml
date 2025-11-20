@@ -46,8 +46,8 @@ services:
       - "5672:5672" # AMQP
       - "15672:15672" # Management UI
     environment:
-      - RABBITMQ_DEFAULT_USER=gordon
-      - RABBITMQ_DEFAULT_PASS=gordon123
+      - RABBITMQ_DEFAULT_USER=${RABBITMQ_USER:-gordon}
+      - RABBITMQ_DEFAULT_PASS=${RABBITMQ_PASSWORD:-gordon123}
     volumes:
       - rabbitmq-data:/var/lib/rabbitmq
     networks:
@@ -102,14 +102,14 @@ services:
       - USERID=1000
       - GROUPID=1000
       - SHARE=incoming;/incoming;yes;no;no;gordon;gordon;gordon
-      - USER=gordon;gordon123
+      - USER=${SAMBA_USER:-gordon};${SAMBA_PASSWORD:-gordon123}
     volumes:
       - /opt/gordon-watcher/data/incoming:/incoming
     networks:
       - gordon-network
     command: |
       -s "incoming;/incoming;yes;no;no;gordon" 
-      -u "gordon;gordon123" 
+      -u "${SAMBA_USER:-gordon};${SAMBA_PASSWORD:-gordon123}" 
       -p
 
 volumes:
