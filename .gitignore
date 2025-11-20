@@ -44,20 +44,7 @@ tmp/
 .env.local
 
 # Data directories (development)
-data/incoming/*
-data/processing/*
-data/processed/*
-data/failed/*
-data/ignored/*
-data/tmp/*
-
-# Keep directory structure
-!data/incoming/.gitkeep
-!data/processing/.gitkeep
-!data/processed/.gitkeep
-!data/failed/.gitkeep
-!data/ignored/.gitkeep
-!data/tmp/.gitkeep
+data/
 
 # Ansible
 ansible/*.retry
