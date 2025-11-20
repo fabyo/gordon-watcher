@@ -356,6 +356,35 @@ func (w *Watcher) processFile(ctx context.Context, path string) error {
 		return nil
 	}
 
+	// Check if file is a ZIP and extract it
+	if IsZipFile(path) {
+		w.cfg.Logger.Info("ZIP file detected, extracting", "path", path)
+
+		// Extract to processing directory
+		processingDir := filepath.Join(w.cfg.WorkingDir, w.cfg.SubDirs.Processing)
+		extractedFiles, err := ExtractZip(path, processingDir)
+		if err != nil {
+			w.cfg.Logger.Error("Failed to extract ZIP", "path", path, "error", err)
+			w.moveToFailed(path, "zip_extraction_failed")
+			metrics.WatcherErrors.Inc()
+			return fmt.Errorf("failed to extract ZIP: %w", err)
+		}
+
+		w.cfg.Logger.Info("ZIP extracted successfully",
+			"path", path,
+			"files_extracted", len(extractedFiles))
+
+		// Delete the ZIP file after successful extraction
+		if err := os.Remove(path); err != nil {
+			w.cfg.Logger.Warn("Failed to delete ZIP after extraction", "path", path, "error", err)
+		} else {
+			w.cfg.Logger.Info("ZIP file deleted after extraction", "path", path)
+		}
+
+		// Return early - extracted files will be processed by fsnotify
+		return nil
+	}
+
 	// Calculate file hash
 	hash, err := w.calculateHash(path)
 	if err != nil {
