@@ -559,6 +559,7 @@ Isso vai encerrar qualquer processo que tenha "gordon-watcher" no nome.
 - ⚙️ [Configuração](docs/CONFIGURATION.md) - Guia de configuração detalhado
 - 📖 [Guia de Deploy](docs/DEPLOYMENT.md) - Deploy com Docker Compose e Ansible
 - 👨‍💻 [Guia de Desenvolvimento](docs/DEVELOPMENT.md) - Guia para contribuidores
+- [Resiliência e Confiabilidade](docs/RESILIENCE.md) - Resiliência e Confiabilidade
 - 🔧 [Troubleshooting](docs/TROUBLESHOOTING.md) - Solução de problemas comuns
 - 📚 [GoDoc](docs/GODOC.md) - Como visualizar a documentação da API
 

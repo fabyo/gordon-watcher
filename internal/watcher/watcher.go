@@ -467,6 +467,10 @@ func (w *Watcher) processFile(ctx context.Context, path string) error {
 		return fmt.Errorf("failed to publish to queue: %w", err)
 	}
 
+	// Update metrics
+	metrics.FilesSent.Inc()
+	metrics.FilesProcessed.Inc()
+
 	w.cfg.Logger.Info("File successfully enqueued",
 		"path", path,
 		"hash", hash,

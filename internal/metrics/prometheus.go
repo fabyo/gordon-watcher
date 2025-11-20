@@ -17,6 +17,11 @@ var (
 		Help: "Total number of files sent to queue",
 	})
 
+	FilesProcessed = promauto.NewCounter(prometheus.CounterOpts{
+		Name: "gordon_watcher_files_processed_total",
+		Help: "Total number of files successfully processed",
+	})
+
 	FilesDuplicated = promauto.NewCounter(prometheus.CounterOpts{
 		Name: "gordon_watcher_files_duplicated_total",
 		Help: "Total number of duplicated files (already processed)",
@@ -108,6 +113,7 @@ func Init() {
 	// Initialize counters to zero so they appear in /metrics
 	FilesDetected.Add(0)
 	FilesSent.Add(0)
+	FilesProcessed.Add(0)
 	FilesDuplicated.Add(0)
 	FilesRejected.Add(0)
 	FilesIgnored.Add(0)
