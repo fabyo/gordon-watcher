@@ -120,6 +120,7 @@ func (cs *CleanupScheduler) cleanDirectory(dir string, retentionDays int, dirTyp
 		}
 
 		if shouldDelete {
+			cs.logger.Info("Deleting file during cleanup", "path", path, "retention_days", retentionDays, "age_days", int(now.Sub(info.ModTime()).Hours()/24))
 			if err := os.Remove(path); err != nil {
 				cs.logger.Warn("Failed to delete file",
 					"path", path,
@@ -127,10 +128,6 @@ func (cs *CleanupScheduler) cleanDirectory(dir string, retentionDays int, dirTyp
 			} else {
 				deletedCount++
 				deletedSize += info.Size()
-				cs.logger.Debug("Deleted file",
-					"path", path,
-					"age_days", int(now.Sub(info.ModTime()).Hours()/24),
-					"size_bytes", info.Size())
 			}
 		}
 
