@@ -702,6 +702,14 @@ func (w *Watcher) calculateHash(path string) (string, error) {
 	defer file.Close()
 
 	hash := sha256.New()
+
+	// Include filename in hash to avoid collisions with identical content
+	// This allows processing multiple identical files (e.g. during testing)
+	filename := filepath.Base(path)
+	if _, err := hash.Write([]byte(filename)); err != nil {
+		return "", fmt.Errorf("failed to write filename to hash: %w", err)
+	}
+
 	if _, err := io.Copy(hash, file); err != nil {
 		return "", fmt.Errorf("failed to calculate hash: %w", err)
 	}

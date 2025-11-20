@@ -83,7 +83,7 @@ services:
     restart: unless-stopped
     ports:
       - "139:139"
-      - "445:445"
+      - "4445:445"  # Porta 4445 no host para evitar conflito com Windows
     environment:
       - TZ=America/Sao_Paulo
       - USERID=1000

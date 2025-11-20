@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -32,7 +33,7 @@
         h1 {
             font-size: 2.5em;
             margin-bottom: 10px;
-            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
         }
 
         .subtitle {
@@ -51,13 +52,13 @@
             background: white;
             border-radius: 15px;
             padding: 25px;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
             transition: transform 0.3s ease, box-shadow 0.3s ease;
         }
 
         .card:hover {
             transform: translateY(-5px);
-            box-shadow: 0 15px 40px rgba(0,0,0,0.3);
+            box-shadow: 0 15px 40px rgba(0, 0, 0, 0.3);
         }
 
         .card-header {
@@ -90,17 +91,31 @@
             margin-top: 10px;
         }
 
-        .success { color: #10b981; }
-        .warning { color: #f59e0b; }
-        .danger { color: #ef4444; }
-        .info { color: #3b82f6; }
-        .purple { color: #8b5cf6; }
+        .success {
+            color: #10b981;
+        }
+
+        .warning {
+            color: #f59e0b;
+        }
+
+        .danger {
+            color: #ef4444;
+        }
+
+        .info {
+            color: #3b82f6;
+        }
+
+        .purple {
+            color: #8b5cf6;
+        }
 
         .chart-container {
             background: white;
             border-radius: 15px;
             padding: 25px;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
             margin-bottom: 20px;
         }
 
@@ -124,8 +139,15 @@
         }
 
         @keyframes pulse {
-            0%, 100% { opacity: 1; }
-            50% { opacity: 0.5; }
+
+            0%,
+            100% {
+                opacity: 1;
+            }
+
+            50% {
+                opacity: 0.5;
+            }
         }
 
         .refresh-info {
@@ -144,7 +166,7 @@
         }
 
         .link-btn {
-            background: rgba(255,255,255,0.2);
+            background: rgba(255, 255, 255, 0.2);
             color: white;
             padding: 12px 24px;
             border-radius: 8px;
@@ -154,7 +176,7 @@
         }
 
         .link-btn:hover {
-            background: rgba(255,255,255,0.3);
+            background: rgba(255, 255, 255, 0.3);
             transform: translateY(-2px);
         }
 
@@ -168,6 +190,7 @@
         }
     </style>
 </head>
+
 <body>
     <div class="container">
         <header>
@@ -282,13 +305,16 @@
     </div>
 
     <script>
+        // Auto-detect if running from Windows (accessing WSL)
+        // Try localhost first, if fails, user can manually change
         const METRICS_URL = 'http://localhost:9100/metrics';
+        // Se não funcionar, tente: http://172.25.144.239:9100/metrics
 
         async function fetchMetrics() {
             try {
                 const response = await fetch(METRICS_URL);
                 if (!response.ok) throw new Error('Falha ao buscar métricas');
-                
+
                 const text = await response.text();
                 parseMetrics(text);
                 hideError();
@@ -301,10 +327,10 @@
         function parseMetrics(text) {
             const metrics = {};
             const lines = text.split('\n');
-            
+
             lines.forEach(line => {
                 if (line.startsWith('#') || !line.trim()) return;
-                
+
                 const match = line.match(/^([a-z_]+)\s+(\d+\.?\d*)/);
                 if (match) {
                     metrics[match[1]] = parseFloat(match[2]);
@@ -315,28 +341,28 @@
         }
 
         function updateDashboard(metrics) {
-            document.getElementById('filesDetected').textContent = 
+            document.getElementById('filesDetected').textContent =
                 formatNumber(metrics.gordon_watcher_files_detected_total || 0);
-            
-            document.getElementById('filesSent').textContent = 
+
+            document.getElementById('filesSent').textContent =
                 formatNumber(metrics.gordon_watcher_files_sent_total || 0);
-            
-            document.getElementById('filesDuplicated').textContent = 
+
+            document.getElementById('filesDuplicated').textContent =
                 formatNumber(metrics.gordon_watcher_files_duplicated_total || 0);
-            
-            document.getElementById('filesRejected').textContent = 
+
+            document.getElementById('filesRejected').textContent =
                 formatNumber(metrics.gordon_watcher_files_rejected_total || 0);
-            
-            document.getElementById('filesIgnored').textContent = 
+
+            document.getElementById('filesIgnored').textContent =
                 formatNumber(metrics.gordon_watcher_files_ignored_total || 0);
-            
-            document.getElementById('goroutines').textContent = 
+
+            document.getElementById('goroutines').textContent =
                 formatNumber(metrics.gordon_watcher_goroutines || 0);
-            
-            document.getElementById('activeWorkers').textContent = 
+
+            document.getElementById('activeWorkers').textContent =
                 formatNumber(metrics.gordon_watcher_worker_pool_active_workers || 0);
-            
-            document.getElementById('queueSize').textContent = 
+
+            document.getElementById('queueSize').textContent =
                 formatNumber(metrics.gordon_watcher_worker_pool_queue_size || 0);
 
             updateProcessingRate(metrics);
@@ -347,9 +373,9 @@
             const sent = metrics.gordon_watcher_files_sent_total || 0;
             const duplicated = metrics.gordon_watcher_files_duplicated_total || 0;
             const rejected = metrics.gordon_watcher_files_rejected_total || 0;
-            
+
             const successRate = detected > 0 ? ((sent / detected) * 100).toFixed(1) : 0;
-            
+
             document.getElementById('processingRate').innerHTML = `
                 <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 20px;">
                     <div>
@@ -381,4 +407,5 @@
         setInterval(fetchMetrics, 5000);
     </script>
 </body>
+
 </html>
