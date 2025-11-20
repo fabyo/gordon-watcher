@@ -193,6 +193,9 @@ open web/dashboard.html
 
 # Windows (WSL)
 explorer.exe web/dashboard.html
+
+# Ou acesse direto pelo caminho do arquivo (ajuste o usuário):
+# file://wsl$/Ubuntu/home/fabyo/golang/gordon-watcher/web/dashboard-wsl.html
 ```
 
 **Opção 2: Via Servidor HTTP**
@@ -518,6 +521,20 @@ make clean          # Limpa binários
 
 ---
 
+## ❓ Troubleshooting
+
+### 🛑 Parar o Watcher Forçadamente
+
+Se o watcher travar ou você precisar matá-lo rapidamente (especialmente durante testes):
+
+```bash
+pkill -f gordon-watcher
+```
+
+Isso vai encerrar qualquer processo que tenha "gordon-watcher" no nome.
+
+---
+
 ## 🔒 Segurança
 
 ### ✅ Boas Práticas Implementadas
@@ -558,8 +575,6 @@ godoc -http=:6060
 # Ou via terminal
 go doc github.com/fabyo/gordon-watcher/internal/watcher
 ```
-
-Quando publicado no GitHub, a documentação estará disponível em:  
 **https://pkg.go.dev/github.com/fabyo/gordon-watcher**
 
 ---
