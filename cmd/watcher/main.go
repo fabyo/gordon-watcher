@@ -60,6 +60,10 @@ func main() {
 	// Initialize metrics
 	metrics.Init()
 
+	// Start daily metrics reset at midnight
+	metrics.StartDailyReset()
+	appLog.Info("Daily metrics reset scheduled for midnight")
+
 	// Start metrics server
 	go func() {
 		appLog.Info("Starting metrics server", "addr", cfg.Metrics.Addr)

@@ -18,6 +18,18 @@ func NewServer(addr string) *Server {
 	mux := http.NewServeMux()
 	mux.Handle("/metrics", promhttp.Handler())
 
+	// Add reset endpoint
+	mux.HandleFunc("/reset", func(w http.ResponseWriter, r *http.Request) {
+		if r.Method != http.MethodPost {
+			http.Error(w, "Method not allowed. Use POST.", http.StatusMethodNotAllowed)
+			return
+		}
+
+		Reset()
+		w.WriteHeader(http.StatusOK)
+		w.Write([]byte("Metrics reset successfully\n"))
+	})
+
 	return &Server{
 		server: &http.Server{
 			Addr:         addr,

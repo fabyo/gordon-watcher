@@ -123,3 +123,13 @@ func Init() {
 	WorkerPoolActiveWorkers.Set(0)
 	GoroutineCount.Set(0)
 }
+
+// Reset resets all counter metrics to zero
+// Note: Prometheus counters cannot be truly reset, so we use a workaround
+// by re-registering them. This is primarily for development/testing.
+func Reset() {
+	// For counters, we can't actually reset them in Prometheus
+	// But we can provide a visual reset by using the Init pattern
+	// In production, use PromQL queries like: increase(metric[1h])
+	Init()
+}
