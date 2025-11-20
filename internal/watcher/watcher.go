@@ -317,7 +317,10 @@ func (w *Watcher) handleEvent(event fsnotify.Event) {
 		// Increment metric only after file is stable and ready for processing
 		// Deduplicate to avoid double counting multiple events for the same file
 		if _, exists := w.ignoredFiles.LoadOrStore(path, time.Now()); !exists {
-			metrics.FilesDetected.Inc()
+			// Don't count ZIP files as they are containers
+			if !IsZipFile(path) {
+				metrics.FilesDetected.Inc()
+			}
 		}
 
 		// Apply rate limiting
@@ -377,9 +380,10 @@ func (w *Watcher) processFile(ctx context.Context, path string) error {
 	if IsZipFile(path) {
 		w.cfg.Logger.Info("ZIP file detected, extracting", "path", path)
 
-		// Extract to processing directory
-		processingDir := filepath.Join(w.cfg.WorkingDir, w.cfg.SubDirs.Processing)
-		extractedFiles, err := ExtractZip(path, processingDir)
+		// Extract to same directory (incoming) to trigger fsnotify for extracted files
+		// This ensures extracted files are detected, stabilized, and counted individually
+		extractDir := filepath.Dir(path)
+		extractedFiles, err := ExtractZip(path, extractDir)
 		if err != nil {
 			w.cfg.Logger.Error("Failed to extract ZIP", "path", path, "error", err)
 			w.moveToFailed(path, "zip_extraction_failed")
