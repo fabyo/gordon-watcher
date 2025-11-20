@@ -1,4 +1,4 @@
-# Configuration Guide
+# ⚙️ Guia de Configuração
 
 ## Configuration Files
 

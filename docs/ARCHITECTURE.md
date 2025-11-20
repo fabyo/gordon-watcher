@@ -1,4 +1,4 @@
-# Gordon Watcher - Architecture
+# 🏗️ Arquitetura do Gordon Watcher
 
 ## Overview
 
