@@ -172,11 +172,11 @@ curl http://localhost:9100/metrics | grep gordon_watcher
 
 ## 📊 Observabilidade
 
-### 📈 Dashboard de Métricas (NOVO!)
+### 📈 Dashboard de Métricas
 
-**Visualize TUDO em tempo real sem precisar de Grafana ou ferramentas complexas!**
+**Visualize TUDO em tempo real!**
 
-O Gordon Watcher inclui um dashboard HTML lindo e funcional que mostra todas as métricas importantes.
+O Gordon Watcher inclui um dashboard HTML pratico e funcional que mostra todas as métricas importantes.
 
 #### 🚀 Como Abrir
 
