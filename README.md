@@ -595,12 +595,15 @@ Este projeto está licenciado sob a MIT License - veja o arquivo [LICENSE](LICEN
 
 ---
 
-## 🙏 Agradecimentos
+## �️ Stack Tecnológico
 
-- [fsnotify](https://github.com/fsnotify/fsnotify) - File system notifications
+- [Go](https://go.dev/) - Linguagem principal
+- [Docker](https://www.docker.com/) - Containerização
+- [Caddy](https://caddyserver.com/) - Web Server & Reverse Proxy
+- [fsnotify](https://github.com/fsnotify/fsnotify) - Notificações do sistema de arquivos
 - [RabbitMQ](https://www.rabbitmq.com/) - Message broker
 - [Redis](https://redis.io/) - Distributed locks
-- [Prometheus](https://prometheus.io/) - Metrics
+- [Prometheus](https://prometheus.io/) - Métricas
 - [Jaeger](https://www.jaegertracing.io/) - Distributed tracing
 - [OpenTelemetry](https://opentelemetry.io/) - Observability framework
 
