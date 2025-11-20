@@ -89,6 +89,8 @@ type Watcher struct {
 
 	// Track ignored files to deduplicate metric
 	ignoredFiles sync.Map // map[string]time.Time
+	// Track submitted files to prevent double submission
+	submittedFiles sync.Map // map[string]time.Time
 }
 
 // New creates a new Watcher instance
@@ -316,23 +318,23 @@ func (w *Watcher) handleEvent(event fsnotify.Event) {
 
 		// Increment metric only after file is stable and ready for processing
 		// Deduplicate to avoid double counting multiple events for the same file
-		if _, exists := w.ignoredFiles.LoadOrStore(path, time.Now()); !exists {
+		if _, exists := w.submittedFiles.LoadOrStore(path, time.Now()); !exists {
 			// Don't count ZIP files as they are containers
 			if !IsZipFile(path) {
 				metrics.FilesDetected.Inc()
 			}
-		}
 
-		// Apply rate limiting
-		if !w.rateLimit.Allow() {
-			w.cfg.Logger.Warn("Rate limit exceeded, dropping file", "path", path)
-			metrics.RateLimitDropped.Inc()
-			w.moveToIgnored(path, "rate_limit_exceeded")
-			return
-		}
+			// Apply rate limiting
+			if !w.rateLimit.Allow() {
+				w.cfg.Logger.Warn("Rate limit exceeded, dropping file", "path", path)
+				metrics.RateLimitDropped.Inc()
+				w.moveToIgnored(path, "rate_limit_exceeded")
+				return
+			}
 
-		// Submit to worker pool
-		w.pool.Submit(path)
+			// Submit to worker pool
+			w.pool.Submit(path)
+		}
 	}(event.Name, ctx)
 }
 
@@ -497,8 +499,6 @@ func (w *Watcher) processFile(ctx context.Context, path string) error {
 		"hash", hash,
 		"size", size,
 		"queue", msg.Kind)
-
-	metrics.FilesSent.Inc()
 
 	return nil
 }

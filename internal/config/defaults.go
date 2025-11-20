@@ -34,10 +34,10 @@ func SetDefaults(cfg *Config) {
 		cfg.Watcher.MaxFileSize = 100 * 1024 * 1024
 	}
 	if cfg.Watcher.StableAttempts == 0 {
-		cfg.Watcher.StableAttempts = 3
+		cfg.Watcher.StableAttempts = 5
 	}
 	if cfg.Watcher.StableDelay == 0 {
-		cfg.Watcher.StableDelay = int64(200 * time.Millisecond)
+		cfg.Watcher.StableDelay = int64(1 * time.Second)
 	}
 	if cfg.Watcher.CleanupInterval == 0 {
 		cfg.Watcher.CleanupInterval = int64(5 * time.Minute)
