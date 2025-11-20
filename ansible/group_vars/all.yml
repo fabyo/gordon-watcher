@@ -1,0 +1,96 @@
+---
+# ═══════════════════════════════════════════════════════════
+#  GORDON WATCHER - GLOBAL VARIABLES
+# ═══════════════════════════════════════════════════════════
+
+# Application
+gordon_app_name: gordon-watcher
+gordon_user: gordon
+gordon_group: gordon
+
+# ✅ CORRIGIDO - Paths no /opt
+gordon_base_dir: /opt/gordon-watcher
+gordon_bin_dir: "{{ gordon_base_dir }}/bin"
+gordon_data_dir: "{{ gordon_base_dir }}/data"
+gordon_log_dir: "{{ gordon_base_dir }}/logs"
+gordon_config_dir: /etc/gordon/watcher
+
+# Binary
+gordon_watcher_binary: gordon-watcher
+gordon_watcher_binary_path: "{{ gordon_bin_dir }}/{{ gordon_watcher_binary }}"
+
+# Ports
+gordon_watcher_metrics_port: 9100
+gordon_watcher_health_port: 8081
+
+# ✅ CORRIGIDO - Watcher paths no /opt
+gordon_watcher_paths:
+  - "{{ gordon_data_dir }}/incoming"
+
+# File patterns
+gordon_watcher_file_patterns:
+  - "*.xml"
+  - "*.zip"
+
+gordon_watcher_exclude_patterns:
+  - ".*"
+  - "*.tmp"
+  - "*Zone.Identifier"
+
+gordon_watcher_min_file_size: 100
+gordon_watcher_max_file_size: 104857600
+
+gordon_watcher_stable_attempts: 5
+gordon_watcher_stable_delay: 200ms
+gordon_watcher_cleanup_interval: 5m
+
+# Worker Pool
+gordon_watcher_max_workers: 10
+gordon_watcher_max_files_per_second: 100
+gordon_watcher_worker_queue_size: 20
+
+# ✅ CORRIGIDO - Working directory no /opt
+gordon_watcher_working_dir: "{{ gordon_data_dir }}"
+
+# Subdirectories (relativos ao working_dir)
+gordon_watcher_subdirs:
+  incoming: incoming
+  processing: processing
+  processed: processed
+  failed: failed
+  ignored: ignored
+  tmp: tmp
+
+# Queue (RabbitMQ)
+gordon_watcher_queue_enabled: false
+gordon_watcher_queue_type: rabbitmq
+gordon_watcher_rabbitmq_url: "amqp://guest:guest@localhost:5672/"
+gordon_watcher_rabbitmq_exchange: gordon.files
+gordon_watcher_rabbitmq_queue: gordon.files.processing
+gordon_watcher_rabbitmq_routing_key: file.new
+gordon_watcher_rabbitmq_durable: true
+
+# Redis
+gordon_watcher_redis_enabled: false
+gordon_watcher_redis_addr: localhost:6379
+gordon_watcher_redis_password: ""
+gordon_watcher_redis_db: 0
+
+# Telemetry
+gordon_watcher_telemetry_enabled: false
+gordon_watcher_telemetry_service_name: gordon-watcher
+gordon_watcher_telemetry_endpoint: http://localhost:14268/api/traces
+
+# Logging
+gordon_watcher_log_level: info
+gordon_watcher_log_format: json
+gordon_watcher_log_output: stdout
+
+# Systemd
+gordon_watcher_restart_policy: always
+gordon_watcher_restart_sec: 10
+
+# Logrotate
+gordon_watcher_logrotate_enabled: true
+gordon_watcher_logrotate_rotate: 7
+gordon_watcher_logrotate_size: 100M

@@ -1,0 +1,57 @@
+---
+- name: Check if binary already exists
+  stat:
+    path: "{{ gordon_watcher_binary_path }}"
+  register: existing_binary
+
+- name: Get current version if exists
+  command: "{{ gordon_watcher_binary_path }} --version"
+  register: current_version
+  failed_when: false
+  changed_when: false
+  when: existing_binary.stat.exists
+
+- name: Display current version
+  debug:
+    msg: "Current version: {{ current_version.stdout }}"
+  when: existing_binary.stat.exists and current_version.rc == 0
+
+- name: Backup existing binary
+  copy:
+    src: "{{ gordon_watcher_binary_path }}"
+    dest: "{{ gordon_watcher_binary_path }}.backup.{{ ansible_date_time.epoch }}"
+    remote_src: yes
+    mode: '0755'
+  when: existing_binary.stat.exists
+
+# ✅ ADICIONAR VERIFICAÇÃO WSL
+- name: (Nativo) Download gordon-watcher binary from GitHub
+  get_url:
+    url: "https://github.com/fabyo/gordon-watcher/releases/download/{{ gordon_watcher_version }}/gordon-watcher-linux-{{ ansible_architecture }}"
+    dest: "{{ gordon_watcher_binary_path }}"
+    mode: '0755'
+    owner: "{{ gordon_user }}"
+    group: "{{ gordon_group }}"
+    force: yes
+  when: gordon_watcher_version != 'latest' and gordon_environment != 'development' and not is_wsl
+  notify: Restart gordon-watcher
+
+# ✅ NOVA TASK PARA WSL
+- name: (WSL) Copy local binary (GitHub download pode falhar no WSL)
+  copy:
+    src: "{{ playbook_dir }}/../bin/gordon-watcher"
+    dest: "{{ gordon_watcher_binary_path }}"
+    mode: '0755'
+    owner: "{{ gordon_user }}"
+    group: "{{ gordon_group }}"
+  when: is_wsl or gordon_watcher_version == 'latest' or gordon_environment == 'development'
+  notify: Restart gordon-watcher
+
+- name: Verify binary is executable
+  command: "{{ gordon_watcher_binary_path }} --version"
+  register: new_version
+  changed_when: false
+
+- name: Display new version
+  debug:
+    msg: "Installed version: {{ new_version.stdout }}"

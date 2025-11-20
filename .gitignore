@@ -1,0 +1,67 @@
+# Binaries
+*.exe
+*.exe~
+*.dll
+*.so
+*.dylib
+*:Zone.Identifier
+/gordon-watcher
+dist/
+bin/
+build/
+
+# Test binary
+*.test
+
+# Output of the go coverage tool
+*.out
+coverage/
+
+# Dependency directories
+vendor/
+
+# Go workspace file
+go.work
+
+# IDEs
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Temporary files
+tmp/
+*.tmp
+*.log
+
+# Environment
+.env
+.env.local
+
+# Data directories (development)
+data/incoming/*
+data/processing/*
+data/processed/*
+data/failed/*
+data/ignored/*
+data/tmp/*
+
+# Keep directory structure
+!data/incoming/.gitkeep
+!data/processing/.gitkeep
+!data/processed/.gitkeep
+!data/failed/.gitkeep
+!data/ignored/.gitkeep
+!data/tmp/.gitkeep
+
+# Ansible
+ansible/*.retry
+ansible/.vault_pass
+
+# Coverage
+coverage.html

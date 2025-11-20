@@ -1,0 +1,9 @@
+watcher:
+  # ✅ CORRIGIDO
+  paths:
+    - /opt/gordon-watcher/data/incoming
+  
+  # ...resto igual...
+  
+  # ✅ CORRIGIDO
+  working_dir: /opt/gordon-watcher/data

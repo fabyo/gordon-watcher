@@ -1,0 +1,108 @@
+version: '3.8'
+
+services:
+  watcher:
+    build:
+      context: .
+      dockerfile: docker/Dockerfile
+    image: gordon-watcher:latest
+    container_name: gordon-watcher
+    restart: unless-stopped
+    ports:
+      - "8081:8081" # Health check
+      - "9100:9100" # Metrics
+    volumes:
+      # Mirror host /opt/gordon-watcher/data to container /opt/gordon-watcher/data
+      - /opt/gordon-watcher/data:/opt/gordon-watcher/data
+    environment:
+      - TZ=America/Sao_Paulo
+    depends_on:
+      - rabbitmq
+      - redis
+      - jaeger
+    networks:
+      - gordon-network
+    # Healthcheck is already defined in Dockerfile, but can be overridden here if needed
+
+  # RabbitMQ for message queue
+  rabbitmq:
+    image: rabbitmq:3-management-alpine
+    container_name: gordon-rabbitmq
+    restart: unless-stopped
+    ports:
+      - "5672:5672"   # AMQP
+      - "15672:15672" # Management UI
+    environment:
+      - RABBITMQ_DEFAULT_USER=gordon
+      - RABBITMQ_DEFAULT_PASS=gordon123
+    volumes:
+      - rabbitmq-data:/var/lib/rabbitmq
+    networks:
+      - gordon-network
+    healthcheck:
+      test: rabbitmq-diagnostics -q ping
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  # Redis for distributed locks and caching
+  redis:
+    image: redis:7-alpine
+    container_name: gordon-redis
+    restart: unless-stopped
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis-data:/data
+    networks:
+      - gordon-network
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  # Jaeger for distributed tracing
+  jaeger:
+    image: jaegertracing/all-in-one:latest
+    container_name: gordon-jaeger
+    restart: unless-stopped
+    ports:
+      - "16686:16686" # UI
+      - "14268:14268" # Collector HTTP
+      - "14250:14250" # Collector gRPC
+    environment:
+      - COLLECTOR_OTLP_ENABLED=true
+    networks:
+      - gordon-network
+
+  # Samba for Windows file sharing
+  samba:
+    image: dperson/samba:latest
+    container_name: gordon-samba
+    restart: unless-stopped
+    ports:
+      - "139:139"
+      - "445:445"
+    environment:
+      - TZ=America/Sao_Paulo
+      - USERID=1000
+      - GROUPID=1000
+      - SHARE=incoming;/incoming;yes;no;no;gordon;gordon;gordon
+      - USER=gordon;gordon123
+    volumes:
+      - /opt/gordon-watcher/data/incoming:/incoming
+    networks:
+      - gordon-network
+    command: |
+      -s "incoming;/incoming;yes;no;no;gordon" 
+      -u "gordon;gordon123" 
+      -p
+
+volumes:
+  rabbitmq-data:
+  redis-data:
+
+networks:
+  gordon-network:
+    driver: bridge

@@ -1,0 +1,37 @@
+---
+# ═══════════════════════════════════════════════════════════
+#  GORDON WATCHER - SUPERVISOR (Alternative to systemd)
+#  Para WSL sem systemd ou outros ambientes
+# ═══════════════════════════════════════════════════════════
+
+- name: Install supervisor
+  apt:
+    name: supervisor
+    state: present
+  become: yes
+
+- name: Create supervisor config for gordon-watcher
+  template:
+    src: supervisor.conf.j2
+    dest: /etc/supervisor/conf.d/gordon-watcher.conf
+    owner: root
+    group: root
+    mode: '0644'
+  become: yes
+  notify: Restart supervisor
+
+- name: Reload supervisor configuration
+  command: supervisorctl reread
+  become: yes
+  changed_when: false
+
+- name: Update supervisor
+  command: supervisorctl update
+  become: yes
+  changed_when: false
+
+- name: Start gordon-watcher via supervisor
+  supervisorctl:
+    name: gordon-watcher
+    state: started
+  become: yes

@@ -1,0 +1,61 @@
+[Unit]
+Description=Gordon Watcher - File System Monitor
+Documentation=https://github.com/fabyo/gordon-watcher
+After=network-online.target
+Wants=network-online.target
+{% if gordon_watcher_queue_enabled %}
+After=rabbitmq.service
+{% endif %}
+{% if gordon_watcher_redis_enabled %}
+After=redis.service
+{% endif %}
+
+[Service]
+Type=simple
+User={{ gordon_user }}
+Group={{ gordon_group }}
+# ✅ CORRIGIDO - Working directory
+WorkingDirectory=/opt/gordon-watcher
+
+# Environment
+EnvironmentFile={{ gordon_config_dir }}/environment
+
+# Execution
+ExecStart={{ gordon_watcher_binary_path }}
+ExecReload=/bin/kill -HUP $MAINPID
+
+# Restart policy
+Restart={{ gordon_watcher_restart_policy }}
+RestartSec={{ gordon_watcher_restart_sec }}
+
+# ✅ CORRIGIDO - Security (permite escrita no /opt)
+NoNewPrivileges=true
+PrivateTmp=true
+ProtectSystem=strict
+ProtectHome=true
+# Permite escrita em /opt/gordon-watcher
+ReadWritePaths=/opt/gordon-watcher/data
+ReadWritePaths=/opt/gordon-watcher/logs
+{% for path in gordon_watcher_paths %}
+ReadWritePaths={{ path }}
+{% endfor %}
+
+# Capabilities
+CapabilityBoundingSet=
+AmbientCapabilities=
+
+# Resource limits
+LimitNOFILE=65536
+LimitNPROC=4096
+{% if gordon_environment == 'production' %}
+CPUQuota=200%
+MemoryLimit=2G
+{% endif %}
+
+# Logging
+StandardOutput=journal
+StandardError=journal
+SyslogIdentifier=gordon-watcher
+
+[Install]
+WantedBy=multi-user.target

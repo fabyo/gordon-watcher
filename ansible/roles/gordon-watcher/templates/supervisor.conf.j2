@@ -1,0 +1,14 @@
+[program:gordon-watcher]
+command={{ gordon_watcher_binary_path }}
+directory=/opt/gordon-watcher
+user={{ gordon_user }}
+autostart=true
+autorestart=true
+redirect_stderr=true
+stdout_logfile=/opt/gordon-watcher/logs/gordon-watcher.log
+stdout_logfile_maxbytes=10MB
+stdout_logfile_backups=10
+environment={% for key, value in gordon_watcher_env.items() %}{{ key }}="{{ value }}"{% if not loop.last %},{% endif %}{% endfor %}
+
+[group:gordon]
+programs=gordon-watcher

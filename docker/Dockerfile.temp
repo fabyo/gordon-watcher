@@ -1,0 +1,16 @@
+FROM golang:1.21-alpine
+
+RUN apk add --no-cache ca-certificates curl
+
+RUN addgroup -g 1000 gordon && \
+    adduser -D -u 1000 -G gordon gordon
+
+RUN mkdir -p /opt/gordon-watcher/data /opt/gordon-watcher/logs && \
+    chown -R gordon:gordon /opt/gordon-watcher
+
+USER gordon
+WORKDIR /opt/gordon-watcher
+
+EXPOSE 8081 9100
+
+CMD ["sh", "-c", "echo 'Gordon Watcher (placeholder)' && sleep infinity"]

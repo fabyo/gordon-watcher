@@ -1,0 +1,54 @@
+app:
+  name: gordon-watcher
+  version: dev
+  environment: development
+
+watcher:
+  paths:
+    - /opt/gordon/data/incoming
+  
+  file_patterns:
+    - "*.xml"
+    - "*.zip"
+  
+  exclude_patterns:
+    - ".*"
+    - "*.tmp"
+  
+  min_file_size: 100
+  max_file_size: 104857600
+  
+  stable_attempts: 3
+  stable_delay: 100ms
+  
+  cleanup_interval: 2m
+  
+  max_workers: 5
+  max_files_per_second: 50
+  worker_queue_size: 10
+  
+  working_dir: /opt/gordon/data
+  
+  sub_directories:
+    processing: processing
+    processed: processed
+    failed: failed
+    ignored: ignored
+    tmp: tmp
+
+queue:
+  enabled: false
+redis:
+  enabled: false
+telemetry:
+  enabled: false
+
+metrics:
+  addr: :9100
+health:
+  addr: :8081
+
+logger:
+  level: debug
+  format: text
+  output: stdout

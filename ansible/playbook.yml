@@ -1,0 +1,149 @@
+---
+# ═══════════════════════════════════════════════════════════
+#  GORDON WATCHER - MAIN PLAYBOOK
+# ═══════════════════════════════════════════════════════════
+
+- name: Pre-flight checks
+  hosts: all
+  gather_facts: yes
+  tags: [always]
+  
+  tasks:
+    - name: Display target information
+      debug:
+        msg: |
+          Deploying to: {{ inventory_hostname }}
+          OS: {{ ansible_distribution }} {{ ansible_distribution_version }}
+          Architecture: {{ ansible_architecture }}
+          Environment: {{ gordon_environment }}
+
+- name: Setup base system
+  hosts: all
+  become: yes
+  tags: [setup, base]
+  
+  tasks:
+    - name: Update apt cache
+      apt:
+        update_cache: yes
+        cache_valid_time: 3600
+      when: ansible_os_family == "Debian"
+    
+    - name: Install base packages
+      apt:
+        name:
+          - curl
+          - wget
+          - git
+          - jq
+          - vim
+          - htop
+          - ca-certificates
+          - gnupg
+          - lsb-release
+        state: present
+      when: ansible_os_family == "Debian"
+    
+    - name: Create gordon system user
+      user:
+        name: gordon
+        system: yes
+        shell: /bin/bash
+        home: /opt/gordon-watcher
+        create_home: yes
+        comment: "Gordon Watcher Service User"
+    
+    - name: Create base directories
+      file:
+        path: "{{ item }}"
+        state: directory
+        owner: gordon
+        group: gordon
+        mode: '0755'
+      loop:
+        - /opt/gordon-watcher
+        - /opt/gordon-watcher/bin
+        - /opt/gordon-watcher/data
+        - /opt/gordon-watcher/data/incoming
+        - /opt/gordon-watcher/data/processing
+        - /opt/gordon-watcher/data/processed
+        - /opt/gordon-watcher/data/failed
+        - /opt/gordon-watcher/data/ignored
+        - /opt/gordon-watcher/data/tmp
+        - /opt/gordon-watcher/logs
+        - /etc/gordon
+        - /etc/gordon/watcher
+
+    # ✅ ADICIONAR INSTALAÇÃO DO python3-docker (NATIVO)
+    - name: (Nativo) Install python3-docker for Ansible docker modules
+      apt:
+        name: python3-docker
+        state: present
+      when: ansible_os_family == "Debian"
+
+- name: Deploy Gordon Watcher
+  hosts: all
+  become: yes
+  tags: [deploy, watcher]
+  
+  roles:
+    - gordon-watcher
+
+- name: Post-deployment verification
+  hosts: all
+  become: yes
+  tags: [verify]
+  
+  tasks:
+    # ✅ CONDIÇÃO AJUSTADA
+    - name: Wait for service to be ready
+      wait_for:
+        host: localhost
+        port: "{{ gordon_watcher_health_port }}"
+        delay: 5
+        timeout: 60
+        state: started
+      
+    - name: Check health endpoint
+      uri:
+        url: "http://localhost:{{ gordon_watcher_health_port }}/health"
+        method: GET
+        status_code: 200
+      retries: 5
+      delay: 10
+      register: health_check
+    
+    - name: Check metrics endpoint
+      uri:
+        url: "http://localhost:{{ gordon_watcher_metrics_port }}/metrics"
+        method: GET
+        status_code: 200
+    
+    - name: Display deployment summary
+      debug:
+        msg: |
+          ✅ Gordon Watcher deployed successfully!
+          
+          Environment: {{ 'WSL' if is_wsl else 'Native Linux' }}
+          Service Manager: {{ 'systemd' if has_systemd else 'supervisor' }}
+          Version: {{ gordon_watcher_version }}
+          Watch Paths: {{ gordon_watcher_paths }}
+          
+          Installation:
+            - Binary: /opt/gordon-watcher/bin/gordon-watcher
+            - Data: /opt/gordon-watcher/data/
+            - Config: /etc/gordon/watcher/config.yaml
+            - Logs: /opt/gordon-watcher/logs/
+          
+          Endpoints:
+            - Health:  http://{{ inventory_hostname }}:{{ gordon_watcher_health_port }}/health
+            - Metrics: http://{{ inventory_hostname }}:{{ gordon_watcher_metrics_port }}/metrics
+          
+          Commands:
+            {% if has_systemd %}
+            - Logs:   sudo journalctl -u gordon-watcher -f
+            - Status: sudo systemctl status gordon-watcher
+            {% else %}
+            - Logs:   sudo supervisorctl tail -f gordon-watcher
+            - Status: sudo supervisorctl status gordon-watcher
+            {% endif %}

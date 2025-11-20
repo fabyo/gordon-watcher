@@ -1,0 +1,81 @@
+# ═══════════════════════════════════════════════════════════
+#  GORDON WATCHER - CONFIGURAÇÃO PARA NF-e
+# ═══════════════════════════════════════════════════════════
+
+app:
+  name: gordon-watcher-nfe
+  version: 0.1.0
+  environment: production
+
+watcher:
+  # ✅ CORRIGIDO - Pastas no /opt (não no /home)
+  paths:
+    - /opt/gordon-watcher/data/incoming           # Principal
+    - /mnt/nfe/entrada                            # NFS externo (se houver)
+    - /mnt/nfe/backup                             # Backup (se houver)
+  
+  file_patterns:
+    - "*.xml"
+    - "*.zip"
+  
+  exclude_patterns:
+    - ".*"
+    - "*.tmp"
+    - "*.bak"
+    - "*Zone.Identifier"
+    - "*.pdf"
+    - "*.log"
+  
+  min_file_size: 500
+  max_file_size: 52428800
+  
+  stable_attempts: 10
+  stable_delay: 300ms
+  
+  cleanup_interval: 10m
+  
+  max_workers: 20
+  max_files_per_second: 150
+  worker_queue_size: 40
+  
+  working_dir: /opt/gordon-watcher/data
+  
+  sub_directories:
+    processing: processing
+    processed: processed
+    failed: failed
+    ignored: ignored
+    tmp: tmp
+
+queue:
+  enabled: true
+  type: rabbitmq
+  
+  rabbitmq:
+    url: ${RABBITMQ_URL:amqp://nfe_user:SenhaBemForte123!@rabbitmq:5672/nfe_vhost}
+    exchange: nfe.files
+    queue_name: nfe.files.xml
+    routing_key: nfe.file.xml
+    durable: true
+
+redis:
+  enabled: true
+  addr: ${REDIS_ADDR:redis:6379}
+  password: ${REDIS_PASSWORD:}
+  db: 0
+
+metrics:
+  addr: :9100
+
+health:
+  addr: :8081
+
+telemetry:
+  enabled: true
+  service_name: gordon-watcher-nfe
+  endpoint: ${JAEGER_ENDPOINT:http://jaeger:14268/api/traces}
+
+logger:
+  level: info
+  format: json
+  output: stdout

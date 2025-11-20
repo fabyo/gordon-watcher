@@ -1,0 +1,26 @@
+---
+# Production overrides
+gordon_environment: production
+
+gordon_watcher_version: v0.1.0
+gordon_watcher_log_level: info
+
+# Enable all features in production
+gordon_watcher_queue_enabled: true
+gordon_watcher_redis_enabled: true
+gordon_watcher_telemetry_enabled: true
+
+# Production URLs (use environment variables for sensitive data)
+gordon_watcher_rabbitmq_url: "{{ lookup('env', 'GORDON_RABBITMQ_URL') | default('amqp://gordon:password@rabbitmq:5672/', true) }}"
+gordon_watcher_redis_addr: "{{ lookup('env', 'GORDON_REDIS_ADDR') | default('redis:6379', true) }}"
+gordon_watcher_redis_password: "{{ lookup('env', 'GORDON_REDIS_PASSWORD') | default('', true) }}"
+gordon_watcher_telemetry_endpoint: "{{ lookup('env', 'GORDON_JAEGER_ENDPOINT') | default('http://jaeger:14268/api/traces', true) }}"
+
+# Production tuning
+gordon_watcher_max_workers: 20
+gordon_watcher_max_files_per_second: 200
+
+# ✅ CORRIGIDO - Watch paths (produção)
+gordon_watcher_paths:
+  - /opt/gordon-watcher/data/incoming
+  - /mnt/nfs/shared/incoming              # Se tiver NFS

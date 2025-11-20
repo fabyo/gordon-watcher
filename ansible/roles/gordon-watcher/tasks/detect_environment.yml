@@ -1,0 +1,155 @@
+---
+# ═══════════════════════════════════════════════════════════
+#  GORDON WATCHER - ENVIRONMENT DETECTION
+#  Detecta WSL, systemd, Docker, etc (baseado no nfe-drop)
+# ═══════════════════════════════════════════════════════════
+
+- name: Detecta se estamos em ambiente WSL
+  set_fact:
+    is_wsl: >-
+      {{ (ansible_env.WSL_DISTRO_NAME is defined)
+         or ('microsoft' in (ansible_kernel | lower))
+         or ('wsl' in (ansible_kernel | lower)) }}
+  tags: always
+
+- name: Mostra ambiente detectado
+  debug:
+    msg: "Ambiente detectado: WSL={{ is_wsl }} | kernel={{ ansible_kernel }} | OS={{ ansible_distribution }}"
+  tags: always
+
+- name: Detecta versão do WSL (se aplicável)
+  shell: |
+    if [ -f /proc/version ]; then
+      if grep -qi "WSL2" /proc/version; then
+        echo "wsl2"
+      elif grep -qi "microsoft" /proc/version; then
+        echo "wsl1"
+      else
+        echo "native"
+      fi
+    else
+      echo "native"
+    fi
+  register: wsl_version_check
+  changed_when: false
+  tags: always
+
+- name: Define fato da versão WSL
+  set_fact:
+    wsl_version: "{{ wsl_version_check.stdout }}"
+  tags: always
+
+- name: Detecta se systemd está disponível
+  shell: |
+    if pidof systemd > /dev/null 2>&1; then
+      echo "true"
+    else
+      echo "false"
+    fi
+  register: systemd_check
+  changed_when: false
+  tags: always
+
+- name: Define fato do systemd
+  set_fact:
+    has_systemd: "{{ systemd_check.stdout == 'true' }}"
+  tags: always
+
+- name: Detecta se Docker está instalado
+  shell: |
+    if command -v docker > /dev/null 2>&1; then
+      echo "true"
+    else
+      echo "false"
+    fi
+  register: docker_check
+  changed_when: false
+  tags: always
+
+- name: Define fato do Docker
+  set_fact:
+    has_docker: "{{ docker_check.stdout == 'true' }}"
+  tags: always
+
+- name: Detecta se está rodando dentro de um container Docker
+  shell: |
+    if [ -f /.dockerenv ] || grep -q docker /proc/1/cgroup 2>/dev/null; then
+      echo "true"
+    else
+      echo "false"
+    fi
+  register: in_docker_check
+  changed_when: false
+  tags: always
+
+- name: Define fato in_docker
+  set_fact:
+    in_docker: "{{ in_docker_check.stdout == 'true' }}"
+  tags: always
+
+- name: (WSL) Verifica se systemd está habilitado no WSL2
+  shell: |
+    if [ -f /etc/wsl.conf ]; then
+      grep -i "systemd=true" /etc/wsl.conf && echo "enabled" || echo "disabled"
+    else
+      echo "not_configured"
+    fi
+  register: wsl_systemd_check
+  changed_when: false
+  when: is_wsl and wsl_version == "wsl2"
+  tags: always
+
+- name: Define fato do systemd no WSL
+  set_fact:
+    wsl_systemd_enabled: "{{ wsl_systemd_check.stdout | default('not_configured') == 'enabled' }}"
+  when: is_wsl and wsl_version == "wsl2"
+  tags: always
+
+# ─────────────────────────────────────────────────────────
+#  CORREÇÃO DO DOCKER_HOST (igual ao nfe-drop)
+# ─────────────────────────────────────────────────────────
+
+- name: (WSL) Corrige DOCKER_HOST para unix socket
+  set_fact:
+    docker_host_override: "unix:///var/run/docker.sock"
+  when: is_wsl
+  tags: always
+
+- name: (Nativo) Usa DOCKER_HOST padrão
+  set_fact:
+    docker_host_override: ""
+  when: not is_wsl
+  tags: always
+
+# ─────────────────────────────────────────────────────────
+#  EXIBIR RESUMO
+# ─────────────────────────────────────────────────────────
+
+- name: Exibe resumo da detecção de ambiente
+  debug:
+    msg: |
+      ╔═══════════════════════════════════════════════════╗
+      ║   GORDON WATCHER - ENVIRONMENT DETECTION          ║
+      ╚═══════════════════════════════════════════════════╝
+      
+      Sistema Operacional:
+        - Distribution: {{ ansible_distribution }} {{ ansible_distribution_version }}
+        - Kernel: {{ ansible_kernel }}
+        - Architecture: {{ ansible_architecture }}
+      
+      Ambiente:
+        - Is WSL: {{ is_wsl }}
+        - WSL Version: {{ wsl_version }}
+        {% if is_wsl and wsl_version == 'wsl2' %}
+        - WSL Systemd: {{ wsl_systemd_enabled | default('N/A') }}
+        {% endif %}
+      
+      Serviços:
+        - Has systemd: {{ has_systemd }}
+        - Has Docker: {{ has_docker }}
+        - Inside Docker: {{ in_docker }}
+      
+      Decisões:
+        - Use systemd: {{ has_systemd and not in_docker }}
+        - Docker Host: {{ docker_host_override if docker_host_override else 'default' }}
+  tags: always

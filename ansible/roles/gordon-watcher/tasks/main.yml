@@ -1,0 +1,33 @@
+---
+# ═══════════════════════════════════════════════════════════
+#  GORDON WATCHER - MAIN TASKS
+# ═══════════════════════════════════════════════════════════
+
+# ✅ ADICIONAR ESTA LINHA NO INÍCIO!
+- name: Detect environment (WSL, systemd, Docker)
+  include_tasks: detect_environment.yml
+  tags: [always]
+
+- name: Include install tasks
+  include_tasks: install.yml
+  tags: [install]
+
+- name: Include configure tasks
+  include_tasks: configure.yml
+  tags: [configure]
+
+# ✅ CONDIÇÃO AJUSTADA PARA SYSTEMD
+- name: Include systemd tasks
+  include_tasks: systemd.yml
+  when: has_systemd and not in_docker
+  tags: [systemd]
+
+# ✅ NOVA TASK PARA WSL SEM SYSTEMD
+- name: Include supervisor tasks (WSL without systemd)
+  include_tasks: supervisor.yml
+  when: (is_wsl and not has_systemd) or not has_systemd
+  tags: [supervisor]
+
+- name: Include verify tasks
+  include_tasks: verify.yml
+  tags: [verify]

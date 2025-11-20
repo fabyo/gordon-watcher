@@ -1,0 +1,3 @@
+    volumes:
+      - watcher_data:/opt/gordon-watcher/data
+      - watcher_logs:/opt/gordon-watcher/logs

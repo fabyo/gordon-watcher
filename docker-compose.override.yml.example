@@ -1,0 +1,36 @@
+version: '3.8'
+
+# ═══════════════════════════════════════════════════════════
+#  GORDON WATCHER - DOCKER COMPOSE OVERRIDE (EXAMPLE)
+# ═══════════════════════════════════════════════════════════
+# Copy this file to docker-compose.override.yml to customize
+# your local environment without modifying docker-compose.yml
+
+services:
+  watcher:
+    # Override environment variables
+    environment:
+      # Enable all features for local development
+      - QUEUE_ENABLED=true
+      - QUEUE_TYPE=rabbitmq
+      - QUEUE_URL=amqp://gordon:gordon123@rabbitmq:5672/
+      - QUEUE_EXCHANGE=gordon.files
+      - QUEUE_QUEUE=gordon.files.processing
+      - QUEUE_ROUTING_KEY=file.new
+      - QUEUE_DLQ_ENABLED=true
+      - QUEUE_DLQ_EXCHANGE=gordon.files.dlq
+      - QUEUE_DLQ_QUEUE=gordon.files.dead
+      
+      - REDIS_ENABLED=true
+      - REDIS_ADDR=redis:6379
+      
+      - TELEMETRY_ENABLED=true
+      - TELEMETRY_SERVICE_NAME=gordon-watcher
+      - TELEMETRY_ENDPOINT=http://jaeger:14268/api/traces
+      
+      - LOG_LEVEL=debug
+      - LOG_FORMAT=json
+    
+    # Mount local config for easy editing
+    volumes:
+      - ./configs:/etc/gordon/watcher:ro
