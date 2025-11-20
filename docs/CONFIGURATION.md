@@ -1,33 +1,33 @@
 # ⚙️ Guia de Configuração
 
-## Configuration Files
+## Arquivos de Configuração
 
-Gordon Watcher supports multiple configuration sources (in order of priority):
+O Gordon Watcher suporta múltiplas fontes de configuração (em ordem de prioridade):
 
-1. Environment variables
-2. Config file (YAML)
-3. Default values
+1. Variáveis de ambiente
+2. Arquivo de configuração (YAML)
+3. Valores padrão
 
-## Example Configuration
+## Exemplo de Configuração
 
-See `configs/config.example.yaml` for a complete example.
+Veja `configs/config.example.yaml` para um exemplo completo.
 
-## Environment Variables
+## Variáveis de Ambiente
 
-All configuration options can be set via environment variables with the prefix `GORDON_WATCHER_`.
+Todas as opções de configuração podem ser definidas via variáveis de ambiente com o prefixo `GORDON_WATCHER_`.
 
-Example:
+Exemplo:
 ```bash
 GORDON_WATCHER_MAX_WORKERS=20
 GORDON_WATCHER_LOG_LEVEL=debug
 ```
 
-## Important Settings
+## Configurações Importantes
 
 ### Worker Pool
-- `max_workers`: Number of concurrent file processors (default: 10)
-- `max_files_per_second`: Rate limit (default: 100)
+- `max_workers`: Número de processadores de arquivo concorrentes (padrão: 10)
+- `max_files_per_second`: Limite de taxa (padrão: 100)
 
-### File Matching
-- `file_patterns`: Files to process (e.g., ["*.xml", "*.zip"])
-- `exclude_patterns`: Files to ignore (e.g., [".*", "*.tmp"])
+### Correspondência de Arquivos
+- `file_patterns`: Arquivos a processar (ex: ["*.xml", "*.zip"])
+- `exclude_patterns`: Arquivos a ignorar (ex: [".*", "*.tmp"])

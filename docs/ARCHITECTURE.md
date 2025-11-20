@@ -1,43 +1,43 @@
 # 🏗️ Arquitetura do Gordon Watcher
 
-## Overview
+## Visão Geral
 
-Gordon Watcher is designed with production-grade patterns to handle high-volume file processing without overwhelming system resources.
+O Gordon Watcher foi projetado com padrões de nível de produção para lidar com processamento de arquivos de alto volume sem sobrecarregar os recursos do sistema.
 
-## Components
+## Componentes
 
-### 1. File Watcher
-- Uses `fsnotify` for efficient file system monitoring
-- Recursive directory watching
-- Automatic cleanup of empty directories
+### 1. File Watcher (Observador de Arquivos)
+- Usa `fsnotify` para monitoramento eficiente do sistema de arquivos
+- Monitoramento recursivo de diretórios
+- Limpeza automática de diretórios vazios
 
-### 2. Worker Pool
-- Fixed number of workers (prevents memory overflow)
-- Buffered queue with backpressure
-- Graceful shutdown
+### 2. Worker Pool (Pool de Trabalhadores)
+- Número fixo de workers (previne overflow de memória)
+- Fila com buffer e backpressure
+- Desligamento gracioso
 
-### 3. Rate Limiter
-- Token bucket algorithm
-- Protects downstream services
-- Configurable rate per second
+### 3. Rate Limiter (Limitador de Taxa)
+- Algoritmo de token bucket
+- Protege serviços downstream
+- Taxa configurável por segundo
 
-### 4. Circuit Breaker
-- Protects against cascading failures
-- Three states: Closed, Open, Half-Open
-- Automatic recovery attempts
+### 4. Circuit Breaker (Disjuntor)
+- Protege contra falhas em cascata
+- Três estados: Fechado, Aberto, Meio-Aberto
+- Tentativas automáticas de recuperação
 
-### 5. Storage Layer
-- Redis for distributed deployments
-- In-memory for single instance
-- Idempotency guarantees
+### 5. Camada de Storage
+- Redis para deployments distribuídos
+- In-memory para instância única
+- Garantias de idempotência
 
-## Data Flow
+## Fluxo de Dados
 ```
-File Detected → Worker Pool → Rate Limiter → Circuit Breaker → Queue/Storage
+Arquivo Detectado → Worker Pool → Rate Limiter → Circuit Breaker → Queue/Storage
 ```
 
-## Scaling
+## Escalabilidade
 
-- Horizontal: Multiple watcher instances with Redis
-- Vertical: Increase worker pool size
-- Queue: RabbitMQ handles load distribution
+- **Horizontal**: Múltiplas instâncias do watcher com Redis
+- **Vertical**: Aumentar tamanho do worker pool
+- **Queue**: RabbitMQ gerencia distribuição de carga

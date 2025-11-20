@@ -1,54 +1,54 @@
 # 📚 Visualizando Documentação GoDoc
 
-## Local Development
+## Desenvolvimento Local
 
-### Option 1: godoc server (Classic)
+### Opção 1: servidor godoc (Clássico)
 
 ```bash
-# Install godoc
+# Instalar godoc
 go install golang.org/x/tools/cmd/godoc@latest
 
-# Start server
+# Iniciar servidor
 godoc -http=:6060
 
-# Open browser
+# Abrir navegador
 open http://localhost:6060/pkg/github.com/fabyo/gordon-watcher/
 ```
 
-### Option 2: pkgsite (Modern - pkg.go.dev locally)
+### Opção 2: pkgsite (Moderno - pkg.go.dev localmente)
 
 ```bash
-# Install pkgsite
+# Instalar pkgsite
 go install golang.org/x/pkgsite/cmd/pkgsite@latest
 
-# Start server
+# Iniciar servidor
 pkgsite -http=:8080
 
-# Open browser
+# Abrir navegador
 open http://localhost:8080/github.com/fabyo/gordon-watcher
 ```
 
-### Option 3: go doc (Terminal)
+### Opção 3: go doc (Terminal)
 
 ```bash
-# View package documentation
+# Ver documentação do pacote
 go doc github.com/fabyo/gordon-watcher/internal/watcher
 
-# View specific type
+# Ver tipo específico
 go doc github.com/fabyo/gordon-watcher/internal/watcher.Config
 
-# View specific method
+# Ver método específico
 go doc github.com/fabyo/gordon-watcher/internal/watcher.Watcher.Start
 ```
 
-## Online (after publishing)
+## Online (após publicação)
 
-Once published to GitHub, documentation will be automatically available at:
+Uma vez publicado no GitHub, a documentação estará automaticamente disponível em:
 - https://pkg.go.dev/github.com/fabyo/gordon-watcher
 
-## Generating Static HTML
+## Gerando HTML Estático
 
 ```bash
-# Generate HTML documentation
+# Gerar documentação HTML
 godoc -url=/pkg/github.com/fabyo/gordon-watcher/ > docs/godoc.html
 ```
