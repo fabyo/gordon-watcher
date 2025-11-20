@@ -262,7 +262,6 @@ func (w *Watcher) handleEvent(event fsnotify.Event) {
 	}
 
 	w.cfg.Logger.Info("File detected", "path", event.Name)
-	metrics.FilesDetected.Inc()
 
 	// Launch goroutine for stability check and processing
 	// This prevents blocking the event loop while waiting for file stability
@@ -281,6 +280,9 @@ func (w *Watcher) handleEvent(event fsnotify.Event) {
 			w.moveToIgnored(path, "file_not_stable")
 			return
 		}
+
+		// Increment metric only after file is stable and ready for processing
+		metrics.FilesDetected.Inc()
 
 		// Apply rate limiting
 		if !w.rateLimit.Allow() {
