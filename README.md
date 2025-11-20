@@ -555,22 +555,12 @@ Isso vai encerrar qualquer processo que tenha "gordon-watcher" no nome.
 
 ## 📚 Documentação Adicional
 
+- 🏗️ [Architecture](docs/ARCHITECTURE.md) - Arquitetura e design do sistema
+- ⚙️ [Configuration](docs/CONFIGURATION.md) - Guia de configuração detalhado
 - 📖 [Deployment Guide](docs/DEPLOYMENT.md) - Deploy com Docker Compose e Ansible
 - 👨‍💻 [Development Guide](docs/DEVELOPMENT.md) - Guia para contribuidores
-- 🔧 [Troubleshooting](docs/TROUBLESHOOTING.md) - Solução de problemas comunso Documentação](docs/GODOC.md)
-
-### 📖 API Documentation (GoDoc)
-
-O projeto possui documentação completa no formato GoDoc:
-
-```bash
-# Visualizar localmente
-godoc -http=:6060
-# Acesse: http://localhost:6060/pkg/github.com/fabyo/gordon-watcher/
-
-# Ou via terminal
-go doc github.com/fabyo/gordon-watcher/internal/watcher
-```
+- 🔧 [Troubleshooting](docs/TROUBLESHOOTING.md) - Solução de problemas comuns
+- 📚 [GoDoc](docs/GODOC.md) - Como visualizar a documentação da API
 
 ---
 
