@@ -595,7 +595,7 @@ Este projeto está licenciado sob a MIT License - veja o arquivo [LICENSE](LICEN
 
 ---
 
-## �️ Stack Tecnológico
+## �️ Stacks
 
 - [Go](https://go.dev/) - Linguagem principal
 - [Docker](https://www.docker.com/) - Containerização
