@@ -529,10 +529,23 @@ func (w *Watcher) scanAndWatch(root string) error {
 				w.cfg.Logger.Debug("Directory added to watcher", "path", path)
 			}
 		} else {
+			// Check for Windows/WSL metadata files
+			if strings.HasSuffix(path, ":Zone.Identifier") {
+				w.cfg.Logger.Info("Deleting Zone.Identifier file found during scan", "path", path)
+				if err := os.Remove(path); err != nil {
+					w.cfg.Logger.Warn("Failed to delete Zone.Identifier file", "path", path, "error", err)
+				}
+				return nil
+			}
+
 			// Process existing file
 			if w.matchesPatterns(path) {
 				w.cfg.Logger.Info("Processing existing file from scan", "path", path)
 				w.pool.Submit(path)
+			} else {
+				// Move non-matching files to ignored
+				w.cfg.Logger.Info("Moving non-matching file found during scan to ignored", "path", path)
+				w.moveToIgnored(path, "pattern_mismatch_scan")
 			}
 		}
 
