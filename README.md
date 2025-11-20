@@ -183,26 +183,12 @@ O Gordon Watcher inclui um dashboard HTML pratico e funcional que mostra todas a
 
 #### 🚀 Como Abrir
 
-**Opção 1: Diretamente no Navegador (Recomendado)**
-```bash
-# Linux
-xdg-open web/dashboard.html
+O dashboard é servido automaticamente pelo Docker na porta **8080**.
 
-# macOS
-open web/dashboard.html
+Acesse no seu navegador:
+👉 **http://localhost:8080**
 
-# Windows (WSL)
-explorer.exe web/dashboard.html
-
-# Ou acesse direto pelo caminho do arquivo (ajuste o usuário):
-# file://wsl$/Ubuntu/home/fabyo/golang/gordon-watcher/web/dashboard-wsl.html
-```
-
-**Opção 2: Via Servidor HTTP**
-```bash
-cd web && python3 -m http.server 8000
-# Acesse: http://localhost:8000/dashboard.html
-```
+![Dashboard Preview](web/dashboard.png)
 
 #### 📊 O Que Você Vê
 
