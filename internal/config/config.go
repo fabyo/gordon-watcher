@@ -18,6 +18,7 @@ type Config struct {
 	Health    HealthConfig    `mapstructure:"health"`
 	Telemetry TelemetryConfig `mapstructure:"telemetry"`
 	Logger    LoggerConfig    `mapstructure:"logger"`
+	Cleanup   CleanupConfig   `mapstructure:"cleanup"`
 }
 
 // AppConfig holds application settings
@@ -29,18 +30,18 @@ type AppConfig struct {
 
 // WatcherConfig holds watcher settings
 type WatcherConfig struct {
-	Paths             []string          `mapstructure:"paths"`
-	FilePatterns      []string          `mapstructure:"file_patterns"`
-	ExcludePatterns   []string          `mapstructure:"exclude_patterns"`
-	MinFileSize       int64             `mapstructure:"min_file_size"`
-	MaxFileSize       int64             `mapstructure:"max_file_size"`
-	StableAttempts    int               `mapstructure:"stable_attempts"`
-	StableDelay       int64             `mapstructure:"stable_delay"`
-	CleanupInterval   int64             `mapstructure:"cleanup_interval"`
-	MaxWorkers        int               `mapstructure:"max_workers"`
-	MaxFilesPerSecond int               `mapstructure:"max_files_per_second"`
-	WorkerQueueSize   int               `mapstructure:"worker_queue_size"`
-	WorkingDir        string            `mapstructure:"working_dir"`
+	Paths             []string             `mapstructure:"paths"`
+	FilePatterns      []string             `mapstructure:"file_patterns"`
+	ExcludePatterns   []string             `mapstructure:"exclude_patterns"`
+	MinFileSize       int64                `mapstructure:"min_file_size"`
+	MaxFileSize       int64                `mapstructure:"max_file_size"`
+	StableAttempts    int                  `mapstructure:"stable_attempts"`
+	StableDelay       int64                `mapstructure:"stable_delay"`
+	CleanupInterval   int64                `mapstructure:"cleanup_interval"`
+	MaxWorkers        int                  `mapstructure:"max_workers"`
+	MaxFilesPerSecond int                  `mapstructure:"max_files_per_second"`
+	WorkerQueueSize   int                  `mapstructure:"worker_queue_size"`
+	WorkingDir        string               `mapstructure:"working_dir"`
 	SubDirectories    SubDirectoriesConfig `mapstructure:"sub_directories"`
 }
 
@@ -55,9 +56,9 @@ type SubDirectoriesConfig struct {
 
 // QueueConfig holds queue settings
 type QueueConfig struct {
-	Enabled  bool              `mapstructure:"enabled"`
-	Type     string            `mapstructure:"type"`
-	RabbitMQ RabbitMQConfig    `mapstructure:"rabbitmq"`
+	Enabled  bool           `mapstructure:"enabled"`
+	Type     string         `mapstructure:"type"`
+	RabbitMQ RabbitMQConfig `mapstructure:"rabbitmq"`
 }
 
 // RabbitMQConfig holds RabbitMQ settings
@@ -101,11 +102,26 @@ type LoggerConfig struct {
 	Output string `mapstructure:"output"`
 }
 
+// CleanupConfig holds cleanup settings
+type CleanupConfig struct {
+	Enabled   bool            `mapstructure:"enabled"`
+	Schedule  string          `mapstructure:"schedule"`
+	Retention RetentionConfig `mapstructure:"retention"`
+}
+
+// RetentionConfig holds retention periods in days
+type RetentionConfig struct {
+	Processed int `mapstructure:"processed"` // 0 = never delete
+	Failed    int `mapstructure:"failed"`
+	Ignored   int `mapstructure:"ignored"`
+	Tmp       int `mapstructure:"tmp"` // 0 = always clean
+}
+
 // Load loads configuration from file and environment
 func Load() (*Config, error) {
 	viper.SetConfigName("config")
 	viper.SetConfigType("yaml")
-	
+
 	// Config paths (in order of priority)
 	viper.AddConfigPath("/etc/gordon/watcher")
 	viper.AddConfigPath("$HOME/.gordon/watcher")
@@ -125,21 +141,21 @@ func Load() (*Config, error) {
 	viper.BindEnv("queue.rabbitmq.queue_name")
 	viper.BindEnv("queue.rabbitmq.routing_key")
 	viper.BindEnv("queue.rabbitmq.durable")
-	
+
 	viper.BindEnv("redis.enabled")
 	viper.BindEnv("redis.addr")
 	viper.BindEnv("redis.password")
 	viper.BindEnv("redis.db")
-	
+
 	viper.BindEnv("watcher.paths")
 	viper.BindEnv("watcher.working_dir")
 	viper.BindEnv("watcher.max_workers")
 	viper.BindEnv("watcher.max_files_per_second")
-	
+
 	viper.BindEnv("telemetry.enabled")
 	viper.BindEnv("telemetry.service_name")
 	viper.BindEnv("telemetry.endpoint")
-	
+
 	viper.BindEnv("app.environment")
 	viper.BindEnv("logger.level")
 

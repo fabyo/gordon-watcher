@@ -55,3 +55,12 @@ logger:
   level: debug
   format: text
   output: stdout
+
+cleanup:
+  enabled: true
+  schedule: "0 0 * * *"  # Cron: meia-noite todo dia
+  retention:
+    processed: 0   # 0 = nunca apaga, >0 = dias para manter
+    failed: 1      # Apaga após 1 dia
+    ignored: 1     # Apaga após 1 dia
+    tmp: 0         # Sempre limpa imediatamente

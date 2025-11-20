@@ -198,6 +198,33 @@ func main() {
 		os.Exit(1)
 	}
 
+	// Start cleanup scheduler if enabled
+	if cfg.Cleanup.Enabled {
+		cleanupScheduler := watcher.NewCleanupScheduler(watcher.CleanupConfig{
+			WorkingDir: cfg.Watcher.WorkingDir,
+			SubDirs: watcher.SubDirectories{
+				Processing: cfg.Watcher.SubDirectories.Processing,
+				Processed:  cfg.Watcher.SubDirectories.Processed,
+				Failed:     cfg.Watcher.SubDirectories.Failed,
+				Ignored:    cfg.Watcher.SubDirectories.Ignored,
+				Tmp:        cfg.Watcher.SubDirectories.Tmp,
+			},
+			Retention: map[string]int{
+				"processed": cfg.Cleanup.Retention.Processed,
+				"failed":    cfg.Cleanup.Retention.Failed,
+				"ignored":   cfg.Cleanup.Retention.Ignored,
+				"tmp":       cfg.Cleanup.Retention.Tmp,
+			},
+			Schedule: cfg.Cleanup.Schedule,
+			Logger:   appLog,
+		})
+
+		if err := cleanupScheduler.Start(); err != nil {
+			appLog.Error("Failed to start cleanup scheduler", "error", err)
+		}
+		defer cleanupScheduler.Stop()
+	}
+
 	// Mark as ready
 	healthServer.SetReady(true)
 
