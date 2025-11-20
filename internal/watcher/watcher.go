@@ -541,7 +541,9 @@ func (w *Watcher) scanAndWatch(root string) error {
 			// Process existing file
 			if w.matchesPatterns(path) {
 				w.cfg.Logger.Info("Processing existing file from scan", "path", path)
-				w.pool.Submit(path)
+				// Use blocking submit to ensure all existing files are processed
+				// regardless of queue size
+				w.pool.SubmitBlocking(path)
 			} else {
 				// Move non-matching files to ignored
 				w.cfg.Logger.Info("Moving non-matching file found during scan to ignored", "path", path)

@@ -54,6 +54,16 @@ func (p *WorkerPool) Submit(path string) {
 	}
 }
 
+// SubmitBlocking submits a file path to the worker pool, blocking if the queue is full
+func (p *WorkerPool) SubmitBlocking(path string) {
+	select {
+	case p.queue <- path:
+		metrics.WorkerPoolQueueSize.Set(float64(len(p.queue)))
+	case <-p.stop:
+		// Pool is stopped, ignore
+	}
+}
+
 // worker processes files from the queue
 func (p *WorkerPool) worker() {
 	defer p.wg.Done()
