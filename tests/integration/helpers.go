@@ -1,6 +1,3 @@
-//go:build integration
-// +build integration
-
 package integration
 
 import (
@@ -200,16 +197,7 @@ func (env *TestEnvironment) createTestFile(name, content string) (string, error)
 
 // createTestXML creates a test XML file
 func (env *TestEnvironment) createTestXML(name string) (string, error) {
-	content := fmt.Sprintf(`<?xml version="1.0" encoding="UTF-8"?>
-<nfeProc>
-	<NFe>
-		<infNFe Id="NFe%s">
-			<ide>
-				<cNF>12345</cNF>
-			</ide>
-		</infNFe>
-	</NFe>
-</nfeProc>`, name)
+	content := fmt.Sprintf(`<?xml version="1.0"?><root><item id="%s">Test %s</item></root>`, name, name)
 	return env.createTestFile(name, content)
 }
 

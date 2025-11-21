@@ -100,7 +100,6 @@ directories=(
     "tests/fixtures"
     
     # Examples
-    "examples/nfe-processing"
     "examples/banking"
     "examples/generic"
     
@@ -202,7 +201,7 @@ files=(
     "configs/config.dev.yaml"
     "configs/config.staging.yaml"
     "configs/config.prod.yaml"
-    "configs/config.nfe.yaml"
+    "configs/config.prod.yaml"
     "configs/config.banking.yaml"
     
     # Ansible - Main
@@ -269,7 +268,6 @@ files=(
     "tests/integration/integration_test.go"
     
     # Examples
-    "examples/nfe-processing/README.md"
     "examples/banking/README.md"
     "examples/generic/README.md"
     
@@ -653,7 +651,7 @@ gordon-watcher/
 ├── configs/                           # Configuration files
 │   ├── config.example.yaml
 │   ├── config.dev.yaml
-│   ├── config.nfe.yaml                # NF-e example
+│   ├── config.dev.yaml
 │   └── config.banking.yaml            # Banking example
 ├── ansible/                           # Deployment automation
 │   ├── playbook.yml
@@ -676,7 +674,6 @@ gordon-watcher/
 │   ├── CONFIGURATION.md
 │   └── DEPLOYMENT.md
 ├── examples/                          # Usage examples
-│   ├── nfe-processing/
 │   ├── banking/
 │   └── generic/
 ├── Makefile                           # Build automation

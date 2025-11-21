@@ -11,7 +11,7 @@ Key facts (big picture)
 Where config and env come from
 - Config loader: `internal/config/*` uses Viper. It reads `config.yaml` from these locations (in order): `/etc/gordon/watcher`, `$HOME/.gordon/watcher`, `./configs`, `.`.
 - Environment variables are prefixed with `GORDON_WATCHER_` and many critical keys are explicitly bound in `internal/config/config.go` (see the `viper.BindEnv(...)` lines). Do not remove or change those binds unless you intentionally change how env overrides work.
-- Example configs live in `configs/` (e.g. `config.yaml`, `config.nfe.yaml`). Defaults are set in `internal/config/defaults.go` via `SetDefaults`.
+- Example configs live in `configs/` (e.g. `config.yaml`). Defaults are set in `internal/config/defaults.go` via `SetDefaults`.
 - Important note about durations: config stores durations as integers (int64) and the program converts them with `time.Duration(...)` in `main.go` and `internal/watcher`. When adding duration fields follow the same pattern and set defaults as `int64(<duration>)` in `SetDefaults`.
 
 Build / test / run workflows (use these exact targets)

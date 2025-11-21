@@ -1,6 +1,3 @@
-//go:build integration
-// +build integration
-
 package integration
 
 import (
@@ -71,8 +68,8 @@ func TestWatcher_ZIPExtraction(t *testing.T) {
 
 	// Create ZIP with 2 XML files
 	fileContents := map[string]string{
-		"file1.xml": `<?xml version="1.0"?><nfeProc><NFe><infNFe Id="NFe1"><ide><cNF>1</cNF></ide></infNFe></NFe></nfeProc>`,
-		"file2.xml": `<?xml version="1.0"?><nfeProc><NFe><infNFe Id="NFe2"><ide><cNF>2</cNF></ide></infNFe></NFe></nfeProc>`,
+		"file1.xml": `<?xml version="1.0"?><root><item id="1">Test 1</item></root>`,
+		"file2.xml": `<?xml version="1.0"?><root><item id="2">Test 2</item></root>`,
 	}
 
 	if _, err := env.createTestZIP("test.zip", fileContents); err != nil {
@@ -111,7 +108,7 @@ func TestWatcher_DuplicateHandling(t *testing.T) {
 	}
 
 	// Create a file
-	content := `<?xml version="1.0"?><nfeProc><NFe><infNFe Id="NFe1"><ide><cNF>123</cNF></ide></infNFe></NFe></nfeProc>`
+	content := `<?xml version="1.0"?><root><item id="123">Test 123</item></root>`
 	if _, err := env.createTestFile("file1.xml", content); err != nil {
 		t.Fatalf("Failed to create file: %v", err)
 	}
@@ -220,7 +217,7 @@ func TestWatcher_StabilityChecker(t *testing.T) {
 	}
 
 	// Create file that will be stable
-	content := `<?xml version="1.0"?><nfeProc><NFe><infNFe Id="NFe1"><ide><cNF>123</cNF></ide></infNFe></NFe></nfeProc>`
+	content := `<?xml version="1.0"?><root><item id="123">Test 123</item></root>`
 	if _, err := env.createTestFile("stable.xml", content); err != nil {
 		t.Fatalf("Failed to create stable file: %v", err)
 	}

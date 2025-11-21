@@ -357,12 +357,11 @@ Mensagens que falharem após todas as tentativas vão para `gordon.files.dlq` pa
 
 ## 🎯 Casos de Uso
 
-### 📄 Processamento de Documentos Fiscais (NFe)
-
+### 📄 Processamento de Documentos XML
 ```yaml
 watcher:
   paths:
-    - /data/nfe/incoming
+    - /data/xml/incoming
   file_patterns:
     - "*.xml"
   max_workers: 20

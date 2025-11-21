@@ -1,7 +1,7 @@
 ---
 # ═══════════════════════════════════════════════════════════
 #  GORDON WATCHER - ENVIRONMENT DETECTION
-#  Detecta WSL, systemd, Docker, etc (baseado no nfe-drop)
+#  Detecta WSL, systemd, Docker, etc
 # ═══════════════════════════════════════════════════════════
 
 - name: Detecta se estamos em ambiente WSL
@@ -106,7 +106,7 @@
   tags: always
 
 # ─────────────────────────────────────────────────────────
-#  CORREÇÃO DO DOCKER_HOST (igual ao nfe-drop)
+#  CORREÇÃO DO DOCKER_HOST
 # ─────────────────────────────────────────────────────────
 
 - name: (WSL) Corrige DOCKER_HOST para unix socket

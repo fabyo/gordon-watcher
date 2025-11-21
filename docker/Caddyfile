@@ -1,7 +1,16 @@
 :8080 {
     # Serve static files (Dashboard)
     root * /srv
-    file_server
+    
+    # Proxy Grafana (must come before file_server)
+    handle /grafana* {
+        reverse_proxy grafana:3000
+    }
+
+    # Proxy Prometheus (must come before file_server)
+    handle_path /prometheus/* {
+        reverse_proxy prometheus:9090
+    }
 
     # Proxy metrics requests to the backend
     handle_path /api/metrics {
@@ -15,4 +24,7 @@
     handle /health {
         respond "OK" 200
     }
+
+    # Serve static files (must be last)
+    file_server
 }

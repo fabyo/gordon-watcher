@@ -34,7 +34,6 @@ gordon-watcher/
 │   ├── config.yaml
 │   ├── config.example.yaml
 │   ├── config.dev.yaml
-│   ├── config.nfe.yaml
 │   └── config.test.yaml
 ├── ansible/                           # Automação de deploy
 │   ├── playbook.yml
@@ -45,10 +44,12 @@ gordon-watcher/
 │   │   └── gordon-watcher/
 │   ├── group_vars/
 │   └── scripts/
+├── examples/                          # Usage examples
+│   ├── banking/
+│   └── generic/
 ├── docker/                            # Configurações Docker
 │   ├── Dockerfile
-│   ├── Caddyfile
-│   └── docker-compose.nfe.yml
+│   └── Caddyfile
 ├── scripts/                           # Scripts auxiliares
 │   ├── quick-test.sh
 │   └── stress-test.sh

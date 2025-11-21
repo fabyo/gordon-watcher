@@ -75,19 +75,69 @@ services:
       timeout: 10s
       retries: 3
 
-  # Jaeger for distributed tracing
+  # Redis Exporter for metrics
+  redis-exporter:
+    image: oliver006/redis_exporter:latest
+    container_name: gordon-redis-exporter
+    restart: unless-stopped
+    environment:
+      - REDIS_ADDR=redis:6379
+    networks:
+      - gordon-network
+
+  # Jaeger v2 for distributed tracing
   jaeger:
-    image: jaegertracing/all-in-one:latest
+    image: jaegertracing/jaeger:latest
     container_name: gordon-jaeger
     restart: unless-stopped
     ports:
       - "16686:16686" # UI
-      - "14268:14268" # Collector HTTP (legacy)
-      - "14250:14250" # Collector gRPC (legacy)
       - "4318:4318" # OTLP HTTP
       - "4317:4317" # OTLP gRPC
+      - "14268:14268" # Collector HTTP (legacy)
+      - "14250:14250" # Collector gRPC (legacy)
     environment:
-      - COLLECTOR_OTLP_ENABLED=true
+      - METRICS_STORAGE_TYPE=memory
+    networks:
+      - gordon-network
+
+  # Prometheus for metrics collection
+  prometheus:
+    image: prom/prometheus:latest
+    container_name: gordon-prometheus
+    restart: unless-stopped
+    volumes:
+      - ./docker/prometheus/prometheus.yml:/etc/prometheus/prometheus.yml
+      - prometheus-data:/prometheus
+      - /etc/localtime:/etc/localtime:ro
+    command:
+      - '--config.file=/etc/prometheus/prometheus.yml'
+      - '--storage.tsdb.path=/prometheus'
+      - '--web.console.libraries=/usr/share/prometheus/console_libraries'
+      - '--web.console.templates=/usr/share/prometheus/consoles'
+    networks:
+      - gordon-network
+
+  # Grafana for metrics visualization
+  grafana:
+    image: grafana/grafana:latest
+    container_name: gordon-grafana
+    restart: unless-stopped
+    volumes:
+      - ./docker/grafana/datasources:/etc/grafana/provisioning/datasources
+      - ./docker/grafana/dashboards:/etc/grafana/provisioning/dashboards
+      - grafana-data:/var/lib/grafana
+      - /etc/localtime:/etc/localtime:ro
+      - /etc/timezone:/etc/timezone:ro
+    environment:
+      - GF_SECURITY_ADMIN_USER=${GRAFANA_USER:-admin}
+      - GF_SECURITY_ADMIN_PASSWORD=${GRAFANA_PASSWORD:-admin}
+      - GF_USERS_ALLOW_SIGN_UP=false
+      - GF_SERVER_DOMAIN=localhost
+      - GF_SERVER_ROOT_URL=%(protocol)s://%(domain)s:%(http_port)s/grafana/
+      - GF_SERVER_SERVE_FROM_SUB_PATH=true
+    depends_on:
+      - prometheus
     networks:
       - gordon-network
 
@@ -117,6 +167,8 @@ services:
 volumes:
   rabbitmq-data:
   redis-data:
+  prometheus-data:
+  grafana-data:
 
 
 networks:

@@ -77,13 +77,13 @@ func SetDefaults(cfg *Config) {
 		cfg.Queue.Type = "rabbitmq"
 	}
 	if cfg.Queue.RabbitMQ.Exchange == "" {
-		cfg.Queue.RabbitMQ.Exchange = "nfe_exchange"
+		cfg.Queue.RabbitMQ.Exchange = "gordon_exchange"
 	}
 	if cfg.Queue.RabbitMQ.QueueName == "" {
-		cfg.Queue.RabbitMQ.QueueName = "nfe_queue"
+		cfg.Queue.RabbitMQ.QueueName = "gordon_queue"
 	}
 	if cfg.Queue.RabbitMQ.RoutingKey == "" {
-		cfg.Queue.RabbitMQ.RoutingKey = "nfe.xml"
+		cfg.Queue.RabbitMQ.RoutingKey = "gordon.file"
 	}
 
 	// Redis defaults
