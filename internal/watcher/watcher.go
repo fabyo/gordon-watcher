@@ -289,14 +289,6 @@ func (w *Watcher) handleEvent(event fsnotify.Event) {
 		return
 	}
 
-	// Check if file matches patterns
-	if !w.matchesPatterns(event.Name) {
-		// Move non-matching files to ignored
-		w.cfg.Logger.Info("File does not match patterns, moving to ignored", "path", event.Name)
-		w.moveToIgnored(event.Name, "pattern_mismatch")
-		return
-	}
-
 	// Deduplicate file detection events (fsnotify fires multiple events: CREATE, WRITE, CHMOD)
 	// Only process each file once by checking if we've seen it recently (within 1 second)
 	if lastSeen, exists := w.processedFiles.Load(event.Name); exists {
@@ -308,6 +300,14 @@ func (w *Watcher) handleEvent(event fsnotify.Event) {
 
 	// Mark file as seen
 	w.processedFiles.Store(event.Name, time.Now())
+
+	// Check if file matches patterns
+	if !w.matchesPatterns(event.Name) {
+		// Move non-matching files to ignored
+		w.cfg.Logger.Info("File does not match patterns, moving to ignored", "path", event.Name)
+		w.moveToIgnored(event.Name, "pattern_mismatch")
+		return
+	}
 
 	w.cfg.Logger.Info("File detected", "path", event.Name)
 
