@@ -451,7 +451,7 @@ func (w *Watcher) processFile(ctx context.Context, path string) error {
 		metrics.FilesDuplicated.Inc()
 		return nil // Not an error, just skip
 	}
-	defer lock.Release(ctx)
+	defer func() { _ = lock.Release(ctx) }()
 
 	// Move to processing directory
 	processingPath, err := w.moveToProcessing(path)

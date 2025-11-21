@@ -134,30 +134,30 @@ func Load() (*Config, error) {
 	viper.SetEnvKeyReplacer(strings.NewReplacer(".", "_", "-", "_"))
 
 	// ✅ BIND EXPLÍCITO - ESSENCIAL!
-	viper.BindEnv("queue.enabled")
-	viper.BindEnv("queue.type")
-	viper.BindEnv("queue.rabbitmq.url")
-	viper.BindEnv("queue.rabbitmq.exchange")
-	viper.BindEnv("queue.rabbitmq.queue_name")
-	viper.BindEnv("queue.rabbitmq.routing_key")
-	viper.BindEnv("queue.rabbitmq.durable")
+	_ = viper.BindEnv("queue.enabled")
+	_ = viper.BindEnv("queue.type")
+	_ = viper.BindEnv("queue.rabbitmq.url")
+	_ = viper.BindEnv("queue.rabbitmq.exchange")
+	_ = viper.BindEnv("queue.rabbitmq.queue_name")
+	_ = viper.BindEnv("queue.rabbitmq.routing_key")
+	_ = viper.BindEnv("queue.rabbitmq.durable")
 
-	viper.BindEnv("redis.enabled")
-	viper.BindEnv("redis.addr")
-	viper.BindEnv("redis.password")
-	viper.BindEnv("redis.db")
+	_ = viper.BindEnv("redis.enabled")
+	_ = viper.BindEnv("redis.addr")
+	_ = viper.BindEnv("redis.password")
+	_ = viper.BindEnv("redis.db")
 
-	viper.BindEnv("watcher.paths")
-	viper.BindEnv("watcher.working_dir")
-	viper.BindEnv("watcher.max_workers")
-	viper.BindEnv("watcher.max_files_per_second")
+	_ = viper.BindEnv("watcher.paths")
+	_ = viper.BindEnv("watcher.working_dir")
+	_ = viper.BindEnv("watcher.max_workers")
+	_ = viper.BindEnv("watcher.max_files_per_second")
 
-	viper.BindEnv("telemetry.enabled")
-	viper.BindEnv("telemetry.service_name")
-	viper.BindEnv("telemetry.endpoint")
+	_ = viper.BindEnv("telemetry.enabled")
+	_ = viper.BindEnv("telemetry.service_name")
+	_ = viper.BindEnv("telemetry.endpoint")
 
-	viper.BindEnv("app.environment")
-	viper.BindEnv("logger.level")
+	_ = viper.BindEnv("app.environment")
+	_ = viper.BindEnv("logger.level")
 
 	// Read config file
 	if err := viper.ReadInConfig(); err != nil {

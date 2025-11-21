@@ -25,5 +25,5 @@ func (r *RateLimiter) Allow() bool {
 
 // Wait waits until the rate limit allows another operation
 func (r *RateLimiter) Wait() {
-	r.limiter.Wait(context.Background())
+	_ = r.limiter.Wait(context.Background())
 }

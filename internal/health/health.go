@@ -127,7 +127,7 @@ func (s *Server) healthHandler(w http.ResponseWriter, r *http.Request) {
 
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(statusCode)
-	json.NewEncoder(w).Encode(response)
+	_ = json.NewEncoder(w).Encode(response)
 }
 
 // readyHandler handles /ready endpoint (Kubernetes readiness probe)

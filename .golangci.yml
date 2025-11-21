@@ -25,7 +25,8 @@ linters-settings:
       - (net/http.ResponseWriter).Write
       - (*github.com/streadway/amqp.Channel).Close
       - (*github.com/streadway/amqp.Connection).Close
-      - (github.com/spf13/viper.Viper).BindEnv
+      - (*encoding/json.Encoder).Encode
+      - (*golang.org/x/time/rate.Limiter).Wait
       - os.RemoveAll
       - os.MkdirAll
       - os.WriteFile
