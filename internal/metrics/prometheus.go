@@ -131,11 +131,85 @@ func Init() {
 }
 
 // Reset resets all counter metrics to zero
-// Note: Prometheus counters cannot be truly reset, so we use a workaround
-// by re-registering them. This is primarily for development/testing.
+// Prometheus counters are monotonic, so we need to unregister and re-register them
 func Reset() {
-	// For counters, we can't actually reset them in Prometheus
-	// But we can provide a visual reset by using the Init pattern
-	// In production, use PromQL queries like: increase(metric[1h])
-	Init()
+	// Unregister all metrics
+	prometheus.Unregister(FilesDetected)
+	prometheus.Unregister(FilesSent)
+	prometheus.Unregister(FilesProcessed)
+	prometheus.Unregister(FilesDuplicated)
+	prometheus.Unregister(FilesRejected)
+	prometheus.Unregister(FilesIgnored)
+	prometheus.Unregister(WatcherErrors)
+	prometheus.Unregister(QueueErrors)
+	prometheus.Unregister(StorageErrors)
+	prometheus.Unregister(RateLimitWaits)
+	prometheus.Unregister(RateLimitDropped)
+	prometheus.Unregister(EmptyDirectoriesRemoved)
+
+	// Re-register all counters (this creates new counters at 0)
+	FilesDetected = promauto.NewCounter(prometheus.CounterOpts{
+		Name: "gordon_watcher_files_detected_total",
+		Help: "Total number of files detected",
+	})
+
+	FilesSent = promauto.NewCounter(prometheus.CounterOpts{
+		Name: "gordon_watcher_files_sent_total",
+		Help: "Total number of files sent to queue",
+	})
+
+	FilesProcessed = promauto.NewCounter(prometheus.CounterOpts{
+		Name: "gordon_watcher_files_processed_total",
+		Help: "Total number of files processed",
+	})
+
+	FilesDuplicated = promauto.NewCounter(prometheus.CounterOpts{
+		Name: "gordon_watcher_files_duplicated_total",
+		Help: "Total number of duplicate files detected",
+	})
+
+	FilesRejected = promauto.NewCounter(prometheus.CounterOpts{
+		Name: "gordon_watcher_files_rejected_total",
+		Help: "Total number of files rejected",
+	})
+
+	FilesIgnored = promauto.NewCounter(prometheus.CounterOpts{
+		Name: "gordon_watcher_files_ignored_total",
+		Help: "Total number of files ignored",
+	})
+
+	WatcherErrors = promauto.NewCounter(prometheus.CounterOpts{
+		Name: "gordon_watcher_errors_total",
+		Help: "Total number of watcher errors",
+	})
+
+	QueueErrors = promauto.NewCounter(prometheus.CounterOpts{
+		Name: "gordon_watcher_queue_errors_total",
+		Help: "Total number of queue errors",
+	})
+
+	StorageErrors = promauto.NewCounter(prometheus.CounterOpts{
+		Name: "gordon_watcher_storage_errors_total",
+		Help: "Total number of storage errors",
+	})
+
+	RateLimitWaits = promauto.NewCounter(prometheus.CounterOpts{
+		Name: "gordon_watcher_rate_limit_waits_total",
+		Help: "Total number of rate limit waits",
+	})
+
+	RateLimitDropped = promauto.NewCounter(prometheus.CounterOpts{
+		Name: "gordon_watcher_rate_limit_dropped_total",
+		Help: "Total number of rate limit dropped files",
+	})
+
+	EmptyDirectoriesRemoved = promauto.NewCounter(prometheus.CounterOpts{
+		Name: "gordon_watcher_empty_directories_removed_total",
+		Help: "Total number of empty directories removed",
+	})
+
+	// Reset gauges to 0
+	WorkerPoolQueueSize.Set(0)
+	WorkerPoolActiveWorkers.Set(0)
+	GoroutineCount.Set(0)
 }
