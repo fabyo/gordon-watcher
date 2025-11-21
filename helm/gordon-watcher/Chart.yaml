@@ -1,0 +1,17 @@
+apiVersion: v2
+name: gordon-watcher
+description: Production-ready file system monitoring and processing pipeline
+type: application
+version: 1.0.0
+appVersion: "1.0.0"
+keywords:
+  - file-watcher
+  - rabbitmq
+  - redis
+  - monitoring
+home: https://github.com/fabyo/gordon-watcher
+sources:
+  - https://github.com/fabyo/gordon-watcher
+maintainers:
+  - name: Fabyo
+    email: fabyo@example.com

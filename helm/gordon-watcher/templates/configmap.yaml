@@ -1,0 +1,20 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ include "gordon-watcher.fullname" . }}
+  labels:
+    {{- include "gordon-watcher.labels" . | nindent 4 }}
+data:
+  WATCH_PATHS: {{ join "," .Values.config.watchPaths | quote }}
+  FILE_PATTERNS: {{ join "," .Values.config.filePatterns | quote }}
+  WORKERS: {{ .Values.config.workers | quote }}
+  QUEUE_SIZE: {{ .Values.config.queueSize | quote }}
+  MAX_FILES_PER_SECOND: {{ .Values.config.maxFilesPerSecond | quote }}
+  MIN_FILE_SIZE: {{ .Values.config.minFileSize | quote }}
+  MAX_FILE_SIZE: {{ .Values.config.maxFileSize | quote }}
+  STABLE_ATTEMPTS: {{ .Values.config.stableAttempts | quote }}
+  STABLE_DELAY: {{ .Values.config.stableDelay | quote }}
+  CLEANUP_INTERVAL: {{ .Values.config.cleanupInterval | quote }}
+  CLEANUP_AGE: {{ .Values.config.cleanupAge | quote }}
+  LOG_LEVEL: {{ .Values.config.logLevel | quote }}
+  LOG_FORMAT: {{ .Values.config.logFormat | quote }}

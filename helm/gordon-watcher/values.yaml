@@ -1,0 +1,154 @@
+# Default values for gordon-watcher
+replicaCount: 1
+
+image:
+  repository: ghcr.io/fabyo/gordon-watcher
+  pullPolicy: IfNotPresent
+  tag: "latest"
+
+imagePullSecrets: []
+nameOverride: ""
+fullnameOverride: ""
+
+serviceAccount:
+  create: true
+  annotations: {}
+  name: ""
+
+podAnnotations:
+  prometheus.io/scrape: "true"
+  prometheus.io/port: "8081"
+  prometheus.io/path: "/metrics"
+
+podSecurityContext:
+  fsGroup: 1000
+
+securityContext:
+  capabilities:
+    drop:
+    - ALL
+  readOnlyRootFilesystem: false
+  runAsNonRoot: true
+  runAsUser: 1000
+
+service:
+  type: ClusterIP
+  port: 8081
+  metricsPort: 8081
+
+resources:
+  limits:
+    cpu: 1000m
+    memory: 512Mi
+  requests:
+    cpu: 100m
+    memory: 128Mi
+
+autoscaling:
+  enabled: false
+  minReplicas: 1
+  maxReplicas: 10
+  targetCPUUtilizationPercentage: 80
+  targetMemoryUtilizationPercentage: 80
+
+nodeSelector: {}
+
+tolerations: []
+
+affinity: {}
+
+# Persistent Volume for file storage
+persistence:
+  enabled: true
+  storageClass: ""
+  accessMode: ReadWriteOnce
+  size: 10Gi
+  mountPath: /data
+
+# Gordon Watcher Configuration
+config:
+  # Watch paths
+  watchPaths:
+    - /data/incoming
+  
+  # File patterns
+  filePatterns:
+    - "*.xml"
+    - "*.zip"
+  
+  # Worker pool
+  workers: 5
+  queueSize: 100
+  
+  # Rate limiting
+  maxFilesPerSecond: 100
+  
+  # File size limits
+  minFileSize: 100
+  maxFileSize: 104857600  # 100MB
+  
+  # Stability checker
+  stableAttempts: 5
+  stableDelay: 1s
+  
+  # Cleanup
+  cleanupInterval: 1h
+  cleanupAge: 24h
+  
+  # Logging
+  logLevel: info
+  logFormat: json
+
+# RabbitMQ Configuration
+rabbitmq:
+  enabled: true
+  host: rabbitmq
+  port: 5672
+  username: guest
+  password: guest
+  vhost: /
+  queue: xml
+  exchange: ""
+  routingKey: xml
+  
+  # External RabbitMQ (if enabled: false)
+  external:
+    url: ""
+
+# Redis Configuration
+redis:
+  enabled: true
+  host: redis
+  port: 6379
+  password: ""
+  db: 0
+  
+  # External Redis (if enabled: false)
+  external:
+    url: ""
+
+# Prometheus ServiceMonitor
+serviceMonitor:
+  enabled: false
+  interval: 30s
+  scrapeTimeout: 10s
+  labels: {}
+
+# Health checks
+livenessProbe:
+  httpGet:
+    path: /health
+    port: 8081
+  initialDelaySeconds: 30
+  periodSeconds: 10
+  timeoutSeconds: 5
+  failureThreshold: 3
+
+readinessProbe:
+  httpGet:
+    path: /health
+    port: 8081
+  initialDelaySeconds: 10
+  periodSeconds: 5
+  timeoutSeconds: 3
+  failureThreshold: 3

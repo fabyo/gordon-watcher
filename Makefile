@@ -211,6 +211,13 @@ reset-metrics: ## Reseta as métricas do Prometheus manualmente
 dev-down: ## Para o ambiente de desenvolvimento
 	@docker compose down
 
+.PHONY: reset
+reset: ## Reinicia o ambiente Docker com rebuild (down + up --build)
+	@echo "$(COLOR_YELLOW)Resetting Docker environment...$(COLOR_RESET)"
+	@docker compose down
+	@docker compose up --build -d
+	@echo "$(COLOR_GREEN)✓ Environment reset complete$(COLOR_RESET)"
+
 # ─────────────────────────────────────────────────────────
 #  DOCKER
 # ─────────────────────────────────────────────────────────

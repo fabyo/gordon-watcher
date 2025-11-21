@@ -489,18 +489,56 @@ make build
 ./bin/gordon-watcher
 ```
 
-### 🧪 Testes
+### 🧪 Testing
 
 ```bash
-# Testes unitários
+# Run all unit tests
 make test
 
-# Cobertura
-make coverage
+# Run unit tests with coverage
+make test-coverage
 
-# Lint
-make lint
+# Run integration tests
+make test-integration
+
+# Run all tests (unit + integration)
+go test -v ./...
+go test -v -tags=integration ./tests/integration/...
+
+# Run specific test
+go test -v -run TestCircuitBreaker ./internal/watcher/...
+
+# Generate coverage report
+go test -coverprofile=coverage.out ./...
+go tool cover -html=coverage.out
 ```
+
+#### Test Coverage
+
+**Unit Tests:**
+- ✅ Circuit Breaker (6 tests)
+- ✅ Stability Checker (5 tests)
+- ✅ Worker Pool (7 tests)
+- ✅ Cleaner (6 tests)
+- ✅ Retry Logic (8 tests)
+
+**Integration Tests:**
+- ✅ File Detection & Processing
+- ✅ ZIP Extraction
+- ✅ Duplicate Handling
+- ✅ Rate Limiting
+- ✅ Stability Checker
+- ✅ Non-matching Files
+
+#### CI/CD
+
+GitHub Actions roda automaticamente em PRs e pushes:
+- ✅ Unit & Integration Tests
+- ✅ golangci-lint
+- ✅ Multi-platform builds (Linux, macOS, Windows)
+- ✅ Docker build & push
+- ✅ Security scanning (Trivy)
+
 
 ### 📝 Makefile Targets
 
