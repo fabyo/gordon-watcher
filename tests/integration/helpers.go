@@ -31,16 +31,36 @@ type TestEnvironment struct {
 
 // MockQueue implements queue.Queue for testing
 type MockQueue struct {
+	mu       sync.Mutex
 	Messages []*queue.Message
 }
 
 func (m *MockQueue) Publish(ctx context.Context, msg *queue.Message) error {
+	m.mu.Lock()
+	defer m.mu.Unlock()
 	m.Messages = append(m.Messages, msg)
 	return nil
 }
 
 func (m *MockQueue) Close() error {
 	return nil
+}
+
+// GetMessageCount returns the number of messages in a thread-safe way
+func (m *MockQueue) GetMessageCount() int {
+	m.mu.Lock()
+	defer m.mu.Unlock()
+	return len(m.Messages)
+}
+
+// GetMessage returns a message at index in a thread-safe way
+func (m *MockQueue) GetMessage(index int) *queue.Message {
+	m.mu.Lock()
+	defer m.mu.Unlock()
+	if index < 0 || index >= len(m.Messages) {
+		return nil
+	}
+	return m.Messages[index]
 }
 
 // MockStorage implements storage.Storage for testing
@@ -231,12 +251,12 @@ func (env *TestEnvironment) createTestZIP(zipName string, fileContents map[strin
 func (env *TestEnvironment) waitForProcessing(expectedCount int, timeout time.Duration) error {
 	deadline := time.Now().Add(timeout)
 	for time.Now().Before(deadline) {
-		if len(env.Queue.Messages) >= expectedCount {
+		if env.Queue.GetMessageCount() >= expectedCount {
 			return nil
 		}
 		time.Sleep(100 * time.Millisecond)
 	}
-	return fmt.Errorf("timeout waiting for %d files, got %d", expectedCount, len(env.Queue.Messages))
+	return fmt.Errorf("timeout waiting for %d files, got %d", expectedCount, env.Queue.GetMessageCount())
 }
 
 // countFilesInDir counts files in a directory

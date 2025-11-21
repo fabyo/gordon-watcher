@@ -32,8 +32,8 @@ func TestWatcher_FileDetectionAndProcessing(t *testing.T) {
 	}
 
 	// Verify messages were sent to queue
-	if len(env.Queue.Messages) != 3 {
-		t.Errorf("Expected 3 messages in queue, got %d", len(env.Queue.Messages))
+	if env.Queue.GetMessageCount() != 3 {
+		t.Errorf("Expected 3 messages in queue, got %d", env.Queue.GetMessageCount())
 	}
 
 	// Verify files were moved to processing
@@ -82,8 +82,8 @@ func TestWatcher_ZIPExtraction(t *testing.T) {
 	}
 
 	// Verify 2 messages were sent (one for each XML)
-	if len(env.Queue.Messages) != 2 {
-		t.Errorf("Expected 2 messages in queue, got %d", len(env.Queue.Messages))
+	if env.Queue.GetMessageCount() != 2 {
+		t.Errorf("Expected 2 messages in queue, got %d", env.Queue.GetMessageCount())
 	}
 
 	// Verify ZIP was deleted from incoming
@@ -119,12 +119,12 @@ func TestWatcher_DuplicateHandling(t *testing.T) {
 	}
 
 	// Verify file was processed
-	if len(env.Queue.Messages) != 1 {
-		t.Errorf("Expected 1 message in queue, got %d", len(env.Queue.Messages))
+	if env.Queue.GetMessageCount() != 1 {
+		t.Errorf("Expected 1 message in queue, got %d", env.Queue.GetMessageCount())
 	}
 
 	// Get the hash
-	hash := env.Queue.Messages[0].Hash
+	hash := env.Queue.GetMessage(0).Hash
 
 	// Verify hash was marked as enqueued in storage
 	env.Storage.mu.Lock()
@@ -180,8 +180,8 @@ func TestWatcher_RateLimiting(t *testing.T) {
 
 	// With rate limit of 2/s, not all files should be processed immediately
 	// Some might be dropped or delayed
-	if len(env.Queue.Messages) > 5 {
-		t.Errorf("Expected at most 5 messages, got %d", len(env.Queue.Messages))
+	if env.Queue.GetMessageCount() > 5 {
+		t.Errorf("Expected at most 5 messages, got %d", env.Queue.GetMessageCount())
 	}
 
 	// Verify some files might be in ignored due to rate limiting
@@ -228,8 +228,8 @@ func TestWatcher_StabilityChecker(t *testing.T) {
 	}
 
 	// Verify file was processed
-	if len(env.Queue.Messages) != 1 {
-		t.Errorf("Expected 1 message in queue, got %d", len(env.Queue.Messages))
+	if env.Queue.GetMessageCount() != 1 {
+		t.Errorf("Expected 1 message in queue, got %d", env.Queue.GetMessageCount())
 	}
 }
 
@@ -251,8 +251,8 @@ func TestWatcher_NonMatchingFiles(t *testing.T) {
 	time.Sleep(2 * time.Second)
 
 	// Verify no messages were sent
-	if len(env.Queue.Messages) != 0 {
-		t.Errorf("Expected 0 messages in queue (non-matching file), got %d", len(env.Queue.Messages))
+	if env.Queue.GetMessageCount() != 0 {
+		t.Errorf("Expected 0 messages in queue (non-matching file), got %d", env.Queue.GetMessageCount())
 	}
 
 	// Verify file was moved to ignored
