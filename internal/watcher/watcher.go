@@ -91,6 +91,8 @@ type Watcher struct {
 	ignoredFiles sync.Map // map[string]time.Time
 	// Track submitted files to prevent double submission
 	submittedFiles sync.Map // map[string]time.Time
+	// Track recently processed files to deduplicate fsnotify events
+	processedFiles sync.Map // map[string]time.Time
 }
 
 // New creates a new Watcher instance
@@ -295,6 +297,18 @@ func (w *Watcher) handleEvent(event fsnotify.Event) {
 		}
 		return
 	}
+
+	// Deduplicate file detection events (fsnotify fires multiple events: CREATE, WRITE, CHMOD)
+	// Only process each file once by checking if we've seen it recently (within 1 second)
+	if lastSeen, exists := w.processedFiles.Load(event.Name); exists {
+		if time.Since(lastSeen.(time.Time)) < 1*time.Second {
+			// File was just processed, skip duplicate event
+			return
+		}
+	}
+
+	// Mark file as seen
+	w.processedFiles.Store(event.Name, time.Now())
 
 	w.cfg.Logger.Info("File detected", "path", event.Name)
 
