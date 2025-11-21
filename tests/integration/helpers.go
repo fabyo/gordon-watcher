@@ -181,9 +181,9 @@ func setupTestEnvironment(t *testing.T) *TestEnvironment {
 func (env *TestEnvironment) cleanup() {
 	env.Cancel()
 	if env.Watcher != nil {
-		env.Watcher.Stop(context.Background())
+		_ = env.Watcher.Stop(context.Background())
 	}
-	os.RemoveAll(env.TempDir)
+	_ = os.RemoveAll(env.TempDir)
 }
 
 // createTestFile creates a test file with given content
