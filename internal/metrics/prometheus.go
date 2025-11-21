@@ -6,54 +6,85 @@ import (
 )
 
 var (
-	// Files
-	FilesDetected = promauto.NewCounter(prometheus.CounterOpts{
+	// Files (Vectors)
+	filesDetectedVec = promauto.NewCounterVec(prometheus.CounterOpts{
 		Name: "gordon_watcher_files_detected_total",
 		Help: "Total number of files detected",
-	})
+	}, []string{})
 
-	FilesSent = promauto.NewCounter(prometheus.CounterOpts{
+	filesSentVec = promauto.NewCounterVec(prometheus.CounterOpts{
 		Name: "gordon_watcher_files_sent_total",
 		Help: "Total number of files sent to queue",
-	})
+	}, []string{})
 
-	FilesProcessed = promauto.NewCounter(prometheus.CounterOpts{
+	filesProcessedVec = promauto.NewCounterVec(prometheus.CounterOpts{
 		Name: "gordon_watcher_files_processed_total",
 		Help: "Total number of files successfully processed",
-	})
+	}, []string{})
 
-	FilesDuplicated = promauto.NewCounter(prometheus.CounterOpts{
+	filesDuplicatedVec = promauto.NewCounterVec(prometheus.CounterOpts{
 		Name: "gordon_watcher_files_duplicated_total",
 		Help: "Total number of duplicated files (already processed)",
-	})
+	}, []string{})
 
-	FilesRejected = promauto.NewCounter(prometheus.CounterOpts{
+	filesRejectedVec = promauto.NewCounterVec(prometheus.CounterOpts{
 		Name: "gordon_watcher_files_rejected_total",
 		Help: "Total number of rejected files",
-	})
+	}, []string{})
 
-	FilesIgnored = promauto.NewCounter(prometheus.CounterOpts{
+	filesIgnoredVec = promauto.NewCounterVec(prometheus.CounterOpts{
 		Name: "gordon_watcher_files_ignored_total",
 		Help: "Total number of ignored files",
-	})
+	}, []string{})
 
-	// Errors
-	WatcherErrors = promauto.NewCounter(prometheus.CounterOpts{
+	// Errors (Vectors)
+	watcherErrorsVec = promauto.NewCounterVec(prometheus.CounterOpts{
 		Name: "gordon_watcher_errors_total",
 		Help: "Total number of watcher errors",
-	})
+	}, []string{})
 
-	QueueErrors = promauto.NewCounter(prometheus.CounterOpts{
+	queueErrorsVec = promauto.NewCounterVec(prometheus.CounterOpts{
 		Name: "gordon_watcher_queue_errors_total",
 		Help: "Total number of queue publishing errors",
-	})
+	}, []string{})
 
-	StorageErrors = promauto.NewCounter(prometheus.CounterOpts{
+	storageErrorsVec = promauto.NewCounterVec(prometheus.CounterOpts{
 		Name: "gordon_watcher_storage_errors_total",
 		Help: "Total number of storage errors",
-	})
+	}, []string{})
 
-	// Worker Pool
+	// Rate Limiting (Vectors)
+	rateLimitWaitsVec = promauto.NewCounterVec(prometheus.CounterOpts{
+		Name: "gordon_watcher_rate_limit_waits_total",
+		Help: "Number of times rate limiter caused a wait",
+	}, []string{})
+
+	rateLimitDroppedVec = promauto.NewCounterVec(prometheus.CounterOpts{
+		Name: "gordon_watcher_rate_limit_dropped_total",
+		Help: "Number of files dropped due to rate limiting",
+	}, []string{})
+
+	// Cleanup (Vectors)
+	emptyDirectoriesRemovedVec = promauto.NewCounterVec(prometheus.CounterOpts{
+		Name: "gordon_watcher_empty_directories_removed_total",
+		Help: "Total number of empty directories removed",
+	}, []string{})
+
+	// Public Counters (initialized from Vectors)
+	FilesDetected           = filesDetectedVec.WithLabelValues()
+	FilesSent               = filesSentVec.WithLabelValues()
+	FilesProcessed          = filesProcessedVec.WithLabelValues()
+	FilesDuplicated         = filesDuplicatedVec.WithLabelValues()
+	FilesRejected           = filesRejectedVec.WithLabelValues()
+	FilesIgnored            = filesIgnoredVec.WithLabelValues()
+	WatcherErrors           = watcherErrorsVec.WithLabelValues()
+	QueueErrors             = queueErrorsVec.WithLabelValues()
+	StorageErrors           = storageErrorsVec.WithLabelValues()
+	RateLimitWaits          = rateLimitWaitsVec.WithLabelValues()
+	RateLimitDropped        = rateLimitDroppedVec.WithLabelValues()
+	EmptyDirectoriesRemoved = emptyDirectoriesRemovedVec.WithLabelValues()
+
+	// Worker Pool (Gauges don't need Vec for reset, they have Set)
 	WorkerPoolQueueSize = promauto.NewGauge(prometheus.GaugeOpts{
 		Name: "gordon_watcher_worker_pool_queue_size",
 		Help: "Current size of worker pool queue",
@@ -82,23 +113,6 @@ var (
 		Name:    "gordon_watcher_file_size_bytes",
 		Help:    "Size of files detected in bytes",
 		Buckets: prometheus.ExponentialBuckets(1024, 2, 15),
-	})
-
-	// Rate Limiting
-	RateLimitWaits = promauto.NewCounter(prometheus.CounterOpts{
-		Name: "gordon_watcher_rate_limit_waits_total",
-		Help: "Number of times rate limiter caused a wait",
-	})
-
-	RateLimitDropped = promauto.NewCounter(prometheus.CounterOpts{
-		Name: "gordon_watcher_rate_limit_dropped_total",
-		Help: "Number of files dropped due to rate limiting",
-	})
-
-	// Cleanup
-	EmptyDirectoriesRemoved = promauto.NewCounter(prometheus.CounterOpts{
-		Name: "gordon_watcher_empty_directories_removed_total",
-		Help: "Total number of empty directories removed",
 	})
 
 	// Runtime
@@ -131,82 +145,35 @@ func Init() {
 }
 
 // Reset resets all counter metrics to zero
-// Prometheus counters are monotonic, so we need to unregister and re-register them
+// Uses CounterVec.Reset() to clear metrics and re-initializes them
 func Reset() {
-	// Unregister all metrics
-	prometheus.Unregister(FilesDetected)
-	prometheus.Unregister(FilesSent)
-	prometheus.Unregister(FilesProcessed)
-	prometheus.Unregister(FilesDuplicated)
-	prometheus.Unregister(FilesRejected)
-	prometheus.Unregister(FilesIgnored)
-	prometheus.Unregister(WatcherErrors)
-	prometheus.Unregister(QueueErrors)
-	prometheus.Unregister(StorageErrors)
-	prometheus.Unregister(RateLimitWaits)
-	prometheus.Unregister(RateLimitDropped)
-	prometheus.Unregister(EmptyDirectoriesRemoved)
+	// Reset Vectors
+	filesDetectedVec.Reset()
+	filesSentVec.Reset()
+	filesProcessedVec.Reset()
+	filesDuplicatedVec.Reset()
+	filesRejectedVec.Reset()
+	filesIgnoredVec.Reset()
+	watcherErrorsVec.Reset()
+	queueErrorsVec.Reset()
+	storageErrorsVec.Reset()
+	rateLimitWaitsVec.Reset()
+	rateLimitDroppedVec.Reset()
+	emptyDirectoriesRemovedVec.Reset()
 
-	// Re-register all counters (this creates new counters at 0)
-	FilesDetected = promauto.NewCounter(prometheus.CounterOpts{
-		Name: "gordon_watcher_files_detected_total",
-		Help: "Total number of files detected",
-	})
-
-	FilesSent = promauto.NewCounter(prometheus.CounterOpts{
-		Name: "gordon_watcher_files_sent_total",
-		Help: "Total number of files sent to queue",
-	})
-
-	FilesProcessed = promauto.NewCounter(prometheus.CounterOpts{
-		Name: "gordon_watcher_files_processed_total",
-		Help: "Total number of files processed",
-	})
-
-	FilesDuplicated = promauto.NewCounter(prometheus.CounterOpts{
-		Name: "gordon_watcher_files_duplicated_total",
-		Help: "Total number of duplicate files detected",
-	})
-
-	FilesRejected = promauto.NewCounter(prometheus.CounterOpts{
-		Name: "gordon_watcher_files_rejected_total",
-		Help: "Total number of files rejected",
-	})
-
-	FilesIgnored = promauto.NewCounter(prometheus.CounterOpts{
-		Name: "gordon_watcher_files_ignored_total",
-		Help: "Total number of files ignored",
-	})
-
-	WatcherErrors = promauto.NewCounter(prometheus.CounterOpts{
-		Name: "gordon_watcher_errors_total",
-		Help: "Total number of watcher errors",
-	})
-
-	QueueErrors = promauto.NewCounter(prometheus.CounterOpts{
-		Name: "gordon_watcher_queue_errors_total",
-		Help: "Total number of queue errors",
-	})
-
-	StorageErrors = promauto.NewCounter(prometheus.CounterOpts{
-		Name: "gordon_watcher_storage_errors_total",
-		Help: "Total number of storage errors",
-	})
-
-	RateLimitWaits = promauto.NewCounter(prometheus.CounterOpts{
-		Name: "gordon_watcher_rate_limit_waits_total",
-		Help: "Total number of rate limit waits",
-	})
-
-	RateLimitDropped = promauto.NewCounter(prometheus.CounterOpts{
-		Name: "gordon_watcher_rate_limit_dropped_total",
-		Help: "Total number of rate limit dropped files",
-	})
-
-	EmptyDirectoriesRemoved = promauto.NewCounter(prometheus.CounterOpts{
-		Name: "gordon_watcher_empty_directories_removed_total",
-		Help: "Total number of empty directories removed",
-	})
+	// Re-initialize Public Counters
+	FilesDetected = filesDetectedVec.WithLabelValues()
+	FilesSent = filesSentVec.WithLabelValues()
+	FilesProcessed = filesProcessedVec.WithLabelValues()
+	FilesDuplicated = filesDuplicatedVec.WithLabelValues()
+	FilesRejected = filesRejectedVec.WithLabelValues()
+	FilesIgnored = filesIgnoredVec.WithLabelValues()
+	WatcherErrors = watcherErrorsVec.WithLabelValues()
+	QueueErrors = queueErrorsVec.WithLabelValues()
+	StorageErrors = storageErrorsVec.WithLabelValues()
+	RateLimitWaits = rateLimitWaitsVec.WithLabelValues()
+	RateLimitDropped = rateLimitDroppedVec.WithLabelValues()
+	EmptyDirectoriesRemoved = emptyDirectoriesRemovedVec.WithLabelValues()
 
 	// Reset gauges to 0
 	WorkerPoolQueueSize.Set(0)
