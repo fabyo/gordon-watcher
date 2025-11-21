@@ -34,7 +34,7 @@ func New(cfg Config) *Logger {
 	default:
 		level = slog.LevelInfo
 	}
-	
+
 	// Setup output
 	var output io.Writer
 	switch cfg.Output {
@@ -45,19 +45,19 @@ func New(cfg Config) *Logger {
 	default:
 		output = os.Stdout
 	}
-	
+
 	// Setup handler
 	var handler slog.Handler
 	opts := &slog.HandlerOptions{
 		Level: level,
 	}
-	
+
 	if cfg.Format == "json" {
 		handler = slog.NewJSONHandler(output, opts)
 	} else {
 		handler = slog.NewTextHandler(output, opts)
 	}
-	
+
 	return &Logger{
 		Logger: slog.New(handler),
 	}

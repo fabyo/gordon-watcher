@@ -9,7 +9,7 @@ import (
 type Queue interface {
 	// Publish publishes a message to the queue
 	Publish(ctx context.Context, msg *Message) error
-	
+
 	// Close closes the queue connection
 	Close() error
 }

@@ -28,7 +28,7 @@ func InitTracer(cfg Config) (*sdktrace.TracerProvider, error) {
 	if err != nil {
 		return nil, fmt.Errorf("failed to create Jaeger exporter: %w", err)
 	}
-	
+
 	// Create resource
 	res, err := resource.Merge(
 		resource.Default(),
@@ -42,16 +42,16 @@ func InitTracer(cfg Config) (*sdktrace.TracerProvider, error) {
 	if err != nil {
 		return nil, fmt.Errorf("failed to create resource: %w", err)
 	}
-	
+
 	// Create tracer provider
 	tp := sdktrace.NewTracerProvider(
 		sdktrace.WithBatcher(exporter),
 		sdktrace.WithResource(res),
 		sdktrace.WithSampler(sdktrace.AlwaysSample()),
 	)
-	
+
 	// Set global tracer provider
 	otel.SetTracerProvider(tp)
-	
+
 	return tp, nil
 }

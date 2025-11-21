@@ -8,7 +8,7 @@ import (
 
 // RetryConfig configures retry behavior
 type RetryConfig struct {
-	MaxAttempts int
+	MaxAttempts  int
 	InitialDelay time.Duration
 	MaxDelay     time.Duration
 	Multiplier   float64
@@ -28,21 +28,21 @@ func DefaultRetryConfig() RetryConfig {
 func Retry(ctx context.Context, cfg RetryConfig, fn func() error) error {
 	var lastErr error
 	delay := cfg.InitialDelay
-	
+
 	for attempt := 0; attempt < cfg.MaxAttempts; attempt++ {
 		// Try the function
 		err := fn()
 		if err == nil {
 			return nil // Success!
 		}
-		
+
 		lastErr = err
-		
+
 		// Last attempt, don't wait
 		if attempt == cfg.MaxAttempts-1 {
 			break
 		}
-		
+
 		// Wait before retry
 		select {
 		case <-ctx.Done():
@@ -55,6 +55,6 @@ func Retry(ctx context.Context, cfg RetryConfig, fn func() error) error {
 			}
 		}
 	}
-	
+
 	return fmt.Errorf("failed after %d attempts: %w", cfg.MaxAttempts, lastErr)
 }

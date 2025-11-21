@@ -10,7 +10,7 @@ import (
 // MemoryStorage implements Storage using in-memory maps
 type MemoryStorage struct {
 	mu sync.RWMutex
-	
+
 	processed map[string]time.Time
 	enqueued  map[string]string
 	failed    map[string]string
@@ -31,7 +31,7 @@ func NewMemoryStorage() *MemoryStorage {
 func (s *MemoryStorage) IsProcessed(ctx context.Context, hash string) (bool, error) {
 	s.mu.RLock()
 	defer s.mu.RUnlock()
-	
+
 	_, exists := s.processed[hash]
 	return exists, nil
 }
@@ -40,7 +40,7 @@ func (s *MemoryStorage) IsProcessed(ctx context.Context, hash string) (bool, err
 func (s *MemoryStorage) MarkEnqueued(ctx context.Context, hash, path string) error {
 	s.mu.Lock()
 	defer s.mu.Unlock()
-	
+
 	s.enqueued[hash] = path
 	return nil
 }
@@ -49,10 +49,10 @@ func (s *MemoryStorage) MarkEnqueued(ctx context.Context, hash, path string) err
 func (s *MemoryStorage) MarkProcessed(ctx context.Context, hash string) error {
 	s.mu.Lock()
 	defer s.mu.Unlock()
-	
+
 	s.processed[hash] = time.Now()
 	delete(s.enqueued, hash)
-	
+
 	return nil
 }
 
@@ -60,10 +60,10 @@ func (s *MemoryStorage) MarkProcessed(ctx context.Context, hash string) error {
 func (s *MemoryStorage) MarkFailed(ctx context.Context, hash, reason string) error {
 	s.mu.Lock()
 	defer s.mu.Unlock()
-	
+
 	s.failed[hash] = reason
 	delete(s.enqueued, hash)
-	
+
 	return nil
 }
 
@@ -71,16 +71,16 @@ func (s *MemoryStorage) MarkFailed(ctx context.Context, hash, reason string) err
 func (s *MemoryStorage) GetLock(ctx context.Context, hash string) (Lock, error) {
 	s.mu.Lock()
 	defer s.mu.Unlock()
-	
+
 	if _, exists := s.locks[hash]; exists {
 		return nil, fmt.Errorf("lock already held")
 	}
-	
+
 	lock := &memoryLock{
 		storage: s,
 		hash:    hash,
 	}
-	
+
 	s.locks[hash] = lock
 	return lock, nil
 }
@@ -100,7 +100,7 @@ type memoryLock struct {
 func (l *memoryLock) Release(ctx context.Context) error {
 	l.storage.mu.Lock()
 	defer l.storage.mu.Unlock()
-	
+
 	delete(l.storage.locks, l.hash)
 	return nil
 }

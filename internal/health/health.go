@@ -33,7 +33,7 @@ type Server struct {
 	server    *http.Server
 	startTime time.Time
 	logger    *logger.Logger
-	
+
 	mu     sync.RWMutex
 	ready  bool
 	checks map[string]func() error
@@ -48,19 +48,19 @@ func NewServer(addr string, log *logger.Logger) *Server {
 		ready:     false,
 		checks:    make(map[string]func() error),
 	}
-	
+
 	mux := http.NewServeMux()
 	mux.HandleFunc("/health", s.healthHandler)
 	mux.HandleFunc("/ready", s.readyHandler)
 	mux.HandleFunc("/live", s.liveHandler)
-	
+
 	s.server = &http.Server{
 		Addr:         addr,
 		Handler:      mux,
 		ReadTimeout:  5 * time.Second,
 		WriteTimeout: 5 * time.Second,
 	}
-	
+
 	return s
 }
 
@@ -94,11 +94,11 @@ func (s *Server) healthHandler(w http.ResponseWriter, r *http.Request) {
 	s.mu.RLock()
 	checks := s.checks
 	s.mu.RUnlock()
-	
+
 	// Run all checks
 	checkResults := make(map[string]string)
 	allHealthy := true
-	
+
 	for name, check := range checks {
 		if err := check(); err != nil {
 			checkResults[name] = err.Error()
@@ -107,24 +107,24 @@ func (s *Server) healthHandler(w http.ResponseWriter, r *http.Request) {
 			checkResults[name] = "ok"
 		}
 	}
-	
+
 	status := StatusHealthy
 	if !allHealthy {
 		status = StatusDegraded
 	}
-	
+
 	response := HealthResponse{
 		Status:    status,
 		Timestamp: time.Now(),
 		Uptime:    time.Since(s.startTime).String(),
 		Checks:    checkResults,
 	}
-	
+
 	statusCode := http.StatusOK
 	if status != StatusHealthy {
 		statusCode = http.StatusServiceUnavailable
 	}
-	
+
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(statusCode)
 	json.NewEncoder(w).Encode(response)
@@ -135,7 +135,7 @@ func (s *Server) readyHandler(w http.ResponseWriter, r *http.Request) {
 	s.mu.RLock()
 	ready := s.ready
 	s.mu.RUnlock()
-	
+
 	if ready {
 		w.WriteHeader(http.StatusOK)
 		w.Write([]byte("ready"))

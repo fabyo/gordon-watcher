@@ -12,11 +12,11 @@ import (
 func StartSpan(ctx context.Context, name string, attrs ...attribute.KeyValue) (context.Context, trace.Span) {
 	tracer := otel.Tracer("gordon-watcher")
 	ctx, span := tracer.Start(ctx, name)
-	
+
 	if len(attrs) > 0 {
 		span.SetAttributes(attrs...)
 	}
-	
+
 	return ctx, span
 }
 

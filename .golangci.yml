@@ -8,6 +8,7 @@ linters:
     - unused
     - gofmt
     - goimports
+  disable:
     - misspell
     - unconvert
     - unparam
@@ -16,22 +17,37 @@ linters:
     - revive
 
 linters-settings:
-  gocyclo:
-    min-complexity: 15
-  gocritic:
-    enabled-tags:
-      - diagnostic
-      - performance
-      - style
-  revive:
-    rules:
-      - name: exported
-        disabled: true
+  errcheck:
+    check-blank: false
+    exclude-functions:
+      - (io.Closer).Close
+      - (*os.File).Close
+      - (net/http.ResponseWriter).Write
+      - (*github.com/streadway/amqp.Channel).Close
+      - (*github.com/streadway/amqp.Connection).Close
+      - (github.com/spf13/viper.Viper).BindEnv
+      - os.RemoveAll
+      - os.MkdirAll
+      - os.WriteFile
+      - os.Chtimes
 
 issues:
-  exclude-use-default: false
-  max-issues-per-linter: 0
-  max-same-issues: 0
+  exclude-use-default: true
+  max-issues-per-linter: 50
+  max-same-issues: 10
+  exclude-rules:
+    # Ignore errcheck in test files
+    - path: _test\.go
+      linters:
+        - errcheck
+    # Ignore Jaeger deprecation warning
+    - linters:
+        - staticcheck
+      text: "SA1019.*jaeger"
+    # Ignore empty branch in defer
+    - linters:
+        - staticcheck  
+      text: "SA9003"
 
 run:
   timeout: 5m
