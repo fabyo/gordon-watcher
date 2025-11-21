@@ -271,6 +271,14 @@ func (w *Watcher) handleEvent(event fsnotify.Event) {
 				"error", err)
 		} else {
 			w.cfg.Logger.Debug("Directory added to watcher", "path", event.Name)
+
+			// Scan the new directory for existing files
+			// This is crucial for when a folder with files is moved into the watched directory
+			go func(dirPath string) {
+				if err := w.scanAndWatch(dirPath); err != nil {
+					w.cfg.Logger.Error("Failed to scan new directory", "path", dirPath, "error", err)
+				}
+			}(event.Name)
 		}
 		return
 	}
