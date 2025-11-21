@@ -73,7 +73,7 @@ health:
 telemetry:
   enabled: true
   service_name: gordon-watcher-nfe
-  endpoint: ${JAEGER_ENDPOINT:http://jaeger:14268/api/traces}
+  endpoint: ${JAEGER_ENDPOINT:jaeger:4318}
 
 logger:
   level: info
