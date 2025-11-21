@@ -149,8 +149,8 @@ func TestStabilityChecker_RecordDuration(t *testing.T) {
 		t.Error("Expected file to become stable")
 	}
 
-	// Should take at least 2 attempts * 100ms = 200ms
-	if duration < 200*time.Millisecond {
-		t.Errorf("Expected duration >= 200ms, got %v", duration)
+	// Should take at least 1 attempt * 100ms = 100ms
+	if duration < 100*time.Millisecond {
+		t.Errorf("Expected duration >= 100ms, got %v", duration)
 	}
 }

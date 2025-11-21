@@ -36,7 +36,6 @@ func (p *WorkerPool) Start() {
 
 // Stop stops the worker pool
 func (p *WorkerPool) Stop() {
-	close(p.stop)
 	close(p.queue)
 	p.wg.Wait()
 }
@@ -68,25 +67,18 @@ func (p *WorkerPool) SubmitBlocking(path string) {
 func (p *WorkerPool) worker() {
 	defer p.wg.Done()
 
-	for {
-		select {
-		case <-p.stop:
-			return
+	for path := range p.queue {
+		metrics.WorkerPoolActiveWorkers.Inc()
+		metrics.WorkerPoolQueueSize.Set(float64(len(p.queue)))
 
-		case path, ok := <-p.queue:
-			if !ok {
-				return
-			}
+		// Create a context that can be cancelled if stop is closed
+		// But for graceful shutdown we want to complete processing
+		ctx := context.Background()
 
-			metrics.WorkerPoolActiveWorkers.Inc()
-			metrics.WorkerPoolQueueSize.Set(float64(len(p.queue)))
-
-			ctx := context.Background()
-			if err := p.processor(ctx, path); err != nil {
-				// Error already logged in processor
-			}
-
-			metrics.WorkerPoolActiveWorkers.Dec()
+		if err := p.processor(ctx, path); err != nil {
+			// Error already logged in processor
 		}
+
+		metrics.WorkerPoolActiveWorkers.Dec()
 	}
 }

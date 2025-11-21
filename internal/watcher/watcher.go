@@ -87,9 +87,6 @@ type Watcher struct {
 
 	tracer trace.Tracer
 
-	// Track ignored files to deduplicate metric
-	ignoredFiles sync.Map // map[string]time.Time
-	// Track submitted files to prevent double submission
 	// Track recently processed files to deduplicate fsnotify events
 	processedFiles sync.Map // map[string]time.Time
 }

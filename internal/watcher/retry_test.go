@@ -93,6 +93,7 @@ func TestRetry_ExponentialBackoff(t *testing.T) {
 	}
 
 	cfg := DefaultRetryConfig()
+	cfg.MaxAttempts = 5
 	cfg.InitialDelay = 50 * time.Millisecond
 	cfg.MaxDelay = 500 * time.Millisecond
 	cfg.Multiplier = 2.0
@@ -161,6 +162,7 @@ func TestRetry_MaxDelayRespected(t *testing.T) {
 	}
 
 	cfg := DefaultRetryConfig()
+	cfg.MaxAttempts = 6
 	cfg.InitialDelay = 50 * time.Millisecond
 	cfg.MaxDelay = 100 * time.Millisecond
 	cfg.Multiplier = 3.0 // High multiplier
