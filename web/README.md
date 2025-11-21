@@ -44,7 +44,7 @@ O dashboard inclui links para:
 - 📊 Métricas Prometheus (http://localhost:9100/metrics)
 - 🏥 Health Check (http://localhost:8081/health)
 - 🐰 RabbitMQ Management (http://localhost:15672)
-- 🔍 Jaeger Tracing (http://localhost:16686)
+- 🔍 Jaeger Tracing (http://localhost:16686) - OTLP compatible
 
 ## 🎨 Personalização
 

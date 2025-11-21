@@ -160,7 +160,7 @@ pkill -f gordon-watcher
 Para verificar se as portas necessárias estão livres:
 
 ```bash
-sudo netstat -tulpn | grep -E '8080|8081|9100|5672|15672|6379|16686|14268|139|4445'
+sudo netstat -tulpn | grep -E '8080|8081|9100|5672|15672|6379|16686|4318|4317|139|4445'
 ```
 
 **Portas usadas:**
@@ -171,7 +171,8 @@ sudo netstat -tulpn | grep -E '8080|8081|9100|5672|15672|6379|16686|14268|139|44
 - `15672` - RabbitMQ Management UI
 - `6379` - Redis
 - `16686` - Jaeger UI
-- `14268` - Jaeger Collector
+- `4318` - Jaeger OTLP HTTP (tracing)
+- `4317` - Jaeger OTLP gRPC (tracing)
 - `139` - Samba
 - `4445` - Samba (mapeado de 445)
 

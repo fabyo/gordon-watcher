@@ -45,7 +45,7 @@ gordon-watcher/
 │   ├── metrics/          # Métricas Prometheus
 │   ├── queue/            # Abstração de filas (RabbitMQ/NoOp)
 │   ├── storage/          # Abstração de storage (Redis/Memory)
-│   ├── telemetry/        # OpenTelemetry/Jaeger
+│   ├── telemetry/        # OpenTelemetry/OTLP (Jaeger compatible)
 │   └── watcher/          # Lógica principal do watcher
 │       ├── watcher.go    # Core do watcher
 │       └── pool.go       # Worker pool

@@ -20,7 +20,7 @@
 - 🔍 **Monitoramento em Tempo Real**: Detecta novos arquivos instantaneamente usando `fsnotify`
 - 🚀 **Alta Performance**: Worker pool concorrente com rate limiting configurável
 - 🛡️ **Resiliência Total**: Circuit breaker, retry automático e reconciliação de órfãos
-- 📊 **Observabilidade Completa**: Métricas Prometheus, tracing Jaeger e logs estruturados
+- 📊 **Observabilidade Completa**: Métricas Prometheus, tracing OTLP/Jaeger e logs estruturados
 - 🔒 **Idempotência**: Previne processamento duplicado com hashing SHA256
 - 🐰 **Message Queue**: Integração RabbitMQ com Dead Letter Queue (DLQ)
 - 🔴 **Distributed Locks**: Redis para coordenação em ambientes multi-instância
@@ -225,7 +225,7 @@ O dashboard inclui botões para acessar:
 - 📊 **Métricas Prometheus** (dados brutos)
 - 🏥 **Health Check** (status do serviço)
 - 🐰 **RabbitMQ Management** (filas e mensagens)
-- 🔍 **Jaeger Tracing** (rastreamento distribuído)
+- 🔍 **Jaeger Tracing** (rastreamento distribuído via OTLP)
 
 #### 💡 Exemplo de Uso
 
@@ -272,6 +272,8 @@ curl http://localhost:8081/ready
 
 Visualize o fluxo completo de cada arquivo:
 - Detecção → Estabilização → Hash → Lock → Queue → Worker
+
+> **Nota**: Usa OpenTelemetry Protocol (OTLP) para enviar traces. Compatible com Jaeger, Tempo, Zipkin, etc.
 
 ### 🐰 RabbitMQ Management
 
