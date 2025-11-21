@@ -5,7 +5,7 @@
 # ─────────────────────────────────────────────────────────
 #  STAGE 1: Builder
 # ─────────────────────────────────────────────────────────
-FROM golang:1.21-alpine AS builder
+FROM golang:1.23-alpine AS builder
 
 # Build arguments
 ARG VERSION=dev
@@ -56,9 +56,9 @@ RUN addgroup -g 1000 gordon && \
 
 # Create directories
 RUN mkdir -p /opt/gordon-watcher/bin \
-             /opt/gordon-watcher/data \
-             /opt/gordon-watcher/logs \
-             /etc/gordon/watcher && \
+    /opt/gordon-watcher/data \
+    /opt/gordon-watcher/logs \
+    /etc/gordon/watcher && \
     chown -R gordon:gordon /opt/gordon-watcher /etc/gordon
 
 # Copy binary from builder
