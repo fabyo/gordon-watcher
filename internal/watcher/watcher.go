@@ -90,7 +90,6 @@ type Watcher struct {
 	// Track ignored files to deduplicate metric
 	ignoredFiles sync.Map // map[string]time.Time
 	// Track submitted files to prevent double submission
-	submittedFiles sync.Map // map[string]time.Time
 	// Track recently processed files to deduplicate fsnotify events
 	processedFiles sync.Map // map[string]time.Time
 }
@@ -290,11 +289,6 @@ func (w *Watcher) handleEvent(event fsnotify.Event) {
 		// Move non-matching files to ignored
 		w.cfg.Logger.Info("File does not match patterns, moving to ignored", "path", event.Name)
 		w.moveToIgnored(event.Name, "pattern_mismatch")
-
-		// Deduplicate ignored files metric (only count once per file)
-		if _, exists := w.ignoredFiles.LoadOrStore(event.Name, time.Now()); !exists {
-			metrics.FilesIgnored.Inc()
-		}
 		return
 	}
 
@@ -332,23 +326,22 @@ func (w *Watcher) handleEvent(event fsnotify.Event) {
 
 		// Increment metric only after file is stable and ready for processing
 		// Deduplicate to avoid double counting multiple events for the same file
-		if _, exists := w.submittedFiles.LoadOrStore(path, time.Now()); !exists {
-			// Don't count ZIP files as they are containers
-			if !IsZipFile(path) {
-				metrics.FilesDetected.Inc()
-			}
 
-			// Apply rate limiting
-			if !w.rateLimit.Allow() {
-				w.cfg.Logger.Warn("Rate limit exceeded, dropping file", "path", path)
-				metrics.RateLimitDropped.Inc()
-				w.moveToIgnored(path, "rate_limit_exceeded")
-				return
-			}
-
-			// Submit to worker pool
-			w.pool.Submit(path)
+		// Don't count ZIP files as they are containers
+		if !IsZipFile(path) {
+			metrics.FilesDetected.Inc()
 		}
+
+		// Apply rate limiting
+		if !w.rateLimit.Allow() {
+			w.cfg.Logger.Warn("Rate limit exceeded, dropping file", "path", path)
+			metrics.RateLimitDropped.Inc()
+			w.moveToIgnored(path, "rate_limit_exceeded")
+			return
+		}
+
+		// Submit to worker pool
+		w.pool.Submit(path)
 	}(event.Name, ctx)
 }
 
